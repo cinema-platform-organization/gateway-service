@@ -1,6 +1,7 @@
-import {
+import type {
 	AuthServiceClient,
 	SendOtpRequest,
+	VerifyOtpRequest,
 } from "@cinema-platform/contracts/gen/auth";
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
 import type { ClientGrpc } from "@nestjs/microservices";
@@ -20,5 +21,9 @@ export class AuthClientGrpc implements OnModuleInit {
 
 	public sendOtp(request: SendOtpRequest) {
 		return this.authService.sendOtp(request);
+	}
+
+	public verifyOtp(request: VerifyOtpRequest) {
+		return this.authService.verifyOtp(request);
 	}
 }
