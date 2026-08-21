@@ -1,10 +1,13 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { ApiOperation } from "@nestjs/swagger";
 
+import { AuthClientGrpc } from "./auth.grpc";
 import { SendOtpRequest } from "./dto";
 
 @Controller("auth")
 export class AuthController {
+	public constructor(private readonly client: AuthClientGrpc) {}
+
 	@ApiOperation({
 		summary: "Send otp code",
 		description:
@@ -13,6 +16,6 @@ export class AuthController {
 	@Post("otp/send")
 	@HttpCode(HttpStatus.OK)
 	public async sendOtp(@Body() dto: SendOtpRequest) {
-		return { ok: true };
+		return this.client.sendOtp(dto);
 	}
 }
