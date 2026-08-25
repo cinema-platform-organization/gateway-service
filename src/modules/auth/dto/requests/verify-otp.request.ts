@@ -7,7 +7,7 @@ import {
 	Length,
 	Validate,
 } from "class-validator";
-import { IdentifierValidator } from "src/shared/validators";
+import { IdentifierValidator } from "shared/validators";
 
 export class VerifyOtpRequest {
 	@ApiProperty({ example: "+1234567890" })

@@ -21,7 +21,7 @@
   },
   "dependencies": {
     "@cinema-platform/common": "^1.0.0",
-    "@cinema-platform/contracts": "^1.0.2",
+    "@cinema-platform/contracts": "^1.0.4",
     "@cinema-platform/core": "^1.0.3",
     "@grpc/grpc-js": "^1.14.4",
     "@grpc/proto-loader": "^0.8.1",
@@ -33,6 +33,7 @@
     "@nestjs/swagger": "^11.4.7",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.15.1",
+    "cookie-parser": "^1.4.7",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.2"
   },
@@ -43,6 +44,7 @@
     "@nestjs/schematics": "^11.1.0",
     "@nestjs/testing": "^11.2.1",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.6",
     "@types/jest": "^30.0.0",
     "@types/node": "^24.13.3",

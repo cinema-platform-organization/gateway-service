@@ -1,9 +1,9 @@
+import { SendOtpRequest } from "@cinema-platform/contracts/gen/auth";
 import {
 	ValidationArguments,
 	ValidatorConstraint,
 	ValidatorConstraintInterface,
 } from "class-validator";
-import { SendOtpRequest } from "src/modules/auth/dto";
 
 @ValidatorConstraint({ name: "IdentifierValidator", async: false })
 export class IdentifierValidator implements ValidatorConstraintInterface {
