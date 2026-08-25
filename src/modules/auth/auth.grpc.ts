@@ -1,5 +1,6 @@
 import type {
 	AuthServiceClient,
+	RefreshRequest,
 	SendOtpRequest,
 	VerifyOtpRequest,
 } from "@cinema-platform/contracts/gen/auth";
@@ -25,5 +26,9 @@ export class AuthClientGrpc implements OnModuleInit {
 
 	public verifyOtp(request: VerifyOtpRequest) {
 		return this.authService.verifyOtp(request);
+	}
+
+	public refresh(request: RefreshRequest) {
+		return this.authService.refresh(request);
 	}
 }
