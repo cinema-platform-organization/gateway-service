@@ -1,12 +1,23 @@
+import { PassportModule } from "@cinema-platform/passport";
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
+import { AccountModule } from "modules/account/account.module";
 import { AuthModule } from "modules/auth/auth.module";
 
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { getPassportConfig } from "./config";
 
 @Module({
-	imports: [ConfigModule.forRoot({ isGlobal: true }), AuthModule],
+	imports: [
+		ConfigModule.forRoot({ isGlobal: true }),
+		PassportModule.registerAsync({
+			useFactory: getPassportConfig,
+			inject: [ConfigService],
+		}),
+		AuthModule,
+		AccountModule,
+	],
 	controllers: [AppController],
 	providers: [AppService],
 })
