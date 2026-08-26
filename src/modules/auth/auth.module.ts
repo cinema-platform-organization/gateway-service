@@ -2,7 +2,6 @@ import { PROTO_PATHS } from "@cinema-platform/contracts";
 import { Module } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
-import { AccountModule } from "modules/account/account.module";
 
 import { AuthController } from "./auth.controller";
 import { AuthClientGrpc } from "./auth.grpc";
@@ -23,7 +22,6 @@ import { AuthClientGrpc } from "./auth.grpc";
 				inject: [ConfigService],
 			},
 		]),
-		AccountModule,
 	],
 	controllers: [AuthController],
 	providers: [AuthClientGrpc],
