@@ -1,6 +1,7 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
-import { CurrentUser, Protected } from "shared/decorators";
+
+import { CurrentUser, Protected } from "@/shared/decorators";
 
 import { AccountClientGrpc } from "./account.grpc";
 import {

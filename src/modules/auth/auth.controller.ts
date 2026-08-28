@@ -1,19 +1,28 @@
 import {
 	Body,
 	Controller,
+	Get,
 	HttpCode,
 	HttpStatus,
 	Post,
 	Req,
 	Res,
+	UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { ApiOperation } from "@nestjs/swagger";
 import type { Request, Response } from "express";
 import { lastValueFrom } from "rxjs";
 
+import { TelegramAuthQuery } from "@/shared/interfaces";
+
 import { AuthClientGrpc } from "./auth.grpc";
-import { SendOtpRequest, VerifyOtpRequest } from "./dto";
+import {
+	SendOtpRequest,
+	TelegramFinalizeRequest,
+	TelegramVerifyRequest,
+	VerifyOtpRequest,
+} from "./dto";
 
 @Controller("auth")
 export class AuthController {
@@ -102,5 +111,66 @@ export class AuthController {
 		});
 
 		return { ok: true };
+	}
+
+	@Get("telegram")
+	@HttpCode(HttpStatus.OK)
+	public async telegramInit() {
+		return this.client.telegramInit();
+	}
+
+	@Post("telegram/verify")
+	@HttpCode(HttpStatus.OK)
+	public async telegramVerify(
+		@Body() dto: TelegramVerifyRequest,
+		@Res({ passthrough: true }) res: Response,
+	) {
+		const query = JSON.parse(atob(dto.tgAuthResult)) as TelegramAuthQuery;
+
+		const result = await lastValueFrom(
+			this.client.telegramVerify({ query }),
+		);
+
+		if ("url" in result && result.url) {
+			return result;
+		}
+		if (result.accessToken && result.refreshToken) {
+			const { accessToken, refreshToken } = result;
+
+			res.cookie("refreshToken", refreshToken, {
+				httpOnly: true,
+				secure: this.configService.get("NODE_ENV") !== "development",
+				domain: this.configService.getOrThrow<string>("COOKIES_DOMAIN"),
+				sameSite: "lax",
+				maxAge: 30 * 24 * 60 * 60 * 1000,
+			});
+
+			return { accessToken };
+		}
+
+		throw new UnauthorizedException("Invalid Telegram login response");
+	}
+
+	@Post("telegram/finalize")
+	@HttpCode(HttpStatus.OK)
+	public async finalizeTelegramLogin(
+		@Body() dto: TelegramFinalizeRequest,
+		@Res({ passthrough: true }) res: Response,
+	) {
+		const { sessionId } = dto;
+
+		const { accessToken, refreshToken } = await lastValueFrom(
+			this.client.telegramConsume({ sessionId }),
+		);
+
+		res.cookie("refreshToken", refreshToken, {
+			httpOnly: true,
+			secure: this.configService.get("NODE_ENV") !== "development",
+			domain: this.configService.getOrThrow<string>("COOKIES_DOMAIN"),
+			sameSite: "lax",
+			maxAge: 30 * 24 * 60 * 60 * 1000,
+		});
+
+		return { accessToken };
 	}
 }

@@ -2,6 +2,8 @@ import type {
 	AuthServiceClient,
 	RefreshRequest,
 	SendOtpRequest,
+	TelegramConsumeRequest,
+	TelegramVerifyRequest,
 	VerifyOtpRequest,
 } from "@cinema-platform/contracts/gen/auth";
 import { Inject, Injectable, OnModuleInit } from "@nestjs/common";
@@ -30,5 +32,17 @@ export class AuthClientGrpc implements OnModuleInit {
 
 	public refresh(request: RefreshRequest) {
 		return this.authService.refresh(request);
+	}
+
+	public telegramInit() {
+		return this.authService.telegramInit({});
+	}
+
+	public telegramVerify(request: TelegramVerifyRequest) {
+		return this.authService.telegramVerify(request);
+	}
+
+	public telegramConsume(request: TelegramConsumeRequest) {
+		return this.authService.telegramConsume(request);
 	}
 }

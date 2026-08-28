@@ -8,8 +8,9 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
-import { AccountClientGrpc } from "modules/account/account.grpc";
 import { lastValueFrom } from "rxjs";
+
+import { AccountClientGrpc } from "@/modules/account/account.grpc";
 
 import { ROLES_KEY } from "../decorators";
 
