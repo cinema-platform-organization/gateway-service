@@ -14,8 +14,6 @@ import { ApiOperation } from "@nestjs/swagger";
 import type { Request, Response } from "express";
 import { lastValueFrom } from "rxjs";
 
-import { TelegramAuthQuery } from "@/shared/interfaces";
-
 import { AuthClientGrpc } from "./auth.grpc";
 import {
 	SendOtpRequest,
@@ -23,6 +21,7 @@ import {
 	TelegramVerifyRequest,
 	VerifyOtpRequest,
 } from "./dto";
+import { TelegramAuthQuery } from "./interfaces";
 
 @Controller("auth")
 export class AuthController {
