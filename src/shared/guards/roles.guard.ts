@@ -8,7 +8,6 @@ import {
 } from "@nestjs/common";
 import { Reflector } from "@nestjs/core";
 import { Request } from "express";
-import { lastValueFrom } from "rxjs";
 
 import { AccountClientGrpc } from "@/modules/account/account.grpc";
 
@@ -38,9 +37,9 @@ export class RolesGuard implements CanActivate {
 			throw new ForbiddenException("User context missing");
 		}
 
-		const account = await lastValueFrom(
-			this.accountClient.getAccount({ id: user.id }),
-		);
+		const account = await this.accountClient.call("getAccount", {
+			id: user.id,
+		});
 
 		if (!account) {
 			throw new NotFoundException("Account not found");
