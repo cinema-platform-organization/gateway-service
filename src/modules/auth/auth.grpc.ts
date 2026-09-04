@@ -1,5 +1,5 @@
 import { InjectGrpcClient } from "@cinema-platform/common";
-import type { AuthServiceClient } from "@cinema-platform/contracts/gen/auth";
+import type { AuthServiceClient } from "@cinema-platform/contracts/gen/ts/auth";
 import { Injectable } from "@nestjs/common";
 import type { ClientGrpc } from "@nestjs/microservices";
 

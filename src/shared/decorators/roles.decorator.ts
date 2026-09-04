@@ -1,4 +1,4 @@
-import type { Role } from "@cinema-platform/contracts/gen/account";
+import type { Role } from "@cinema-platform/contracts/gen/ts/account";
 import { SetMetadata } from "@nestjs/common";
 
 export const ROLES_KEY = "required_roles";

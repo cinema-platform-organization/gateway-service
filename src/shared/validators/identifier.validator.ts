@@ -1,4 +1,4 @@
-import { SendOtpRequest } from "@cinema-platform/contracts/gen/auth";
+import { SendOtpRequest } from "@cinema-platform/contracts/gen/ts/auth";
 import {
 	ValidationArguments,
 	ValidatorConstraint,
