@@ -5,8 +5,11 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { AccountModule } from "@/modules/account/account.module";
 import { AuthModule } from "@/modules/auth/auth.module";
 import { CategoryModule } from "@/modules/category/category.module";
+import { HallModule } from "@/modules/hall/hall.module";
 import { MediaModule } from "@/modules/media/media.module";
 import { MovieModule } from "@/modules/movie/movie.module";
+import { SeatModule } from "@/modules/seat/seat.module";
+import { TheaterModule } from "@/modules/theater/theater.module";
 import { UsersModule } from "@/modules/users/users.module";
 import { ObservabilityModule } from "@/observability/observability.module";
 
@@ -34,6 +37,9 @@ import { getPassportConfig } from "./config";
 		UsersModule,
 		MovieModule,
 		CategoryModule,
+		TheaterModule,
+		HallModule,
+		SeatModule,
 		MediaModule,
 	],
 	controllers: [AppController],

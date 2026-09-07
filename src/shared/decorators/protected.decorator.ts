@@ -1,7 +1,6 @@
-import type { Role } from "@cinema-platform/contracts/gen/ts/account";
 import { applyDecorators, UseGuards } from "@nestjs/common";
 
-import { AuthGuard, RolesGuard } from "../guards";
+import { AuthGuard, Role, RolesGuard } from "../guards";
 
 import { Roles } from "./roles.decorator";
 

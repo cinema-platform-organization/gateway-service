@@ -1,4 +1,3 @@
-import type { Role } from "@cinema-platform/contracts/gen/ts/account";
 import {
 	CanActivate,
 	ExecutionContext,
@@ -12,6 +11,12 @@ import { Request } from "express";
 import { AccountClientGrpc } from "@/modules/account/account.grpc";
 
 import { ROLES_KEY } from "../decorators";
+
+export enum Role {
+	USER = 0,
+	ADMIN = 1,
+	UNRECOGNIZED = -1,
+}
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -44,6 +49,7 @@ export class RolesGuard implements CanActivate {
 		if (!account) {
 			throw new NotFoundException("Account not found");
 		}
+
 		if (!required.includes(account.role)) {
 			throw new ForbiddenException(
 				"You do not have permission to access this resource",

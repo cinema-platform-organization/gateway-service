@@ -11,8 +11,6 @@ export class CategoryController {
 	public async getAll() {
 		const response = await this.client.call("getAllCategories", {});
 
-		return Array.isArray(response.categories)
-			? response.categories
-			: response;
+		return Array.isArray(response.categories) ? response.categories : [];
 	}
 }
