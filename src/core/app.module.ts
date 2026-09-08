@@ -8,6 +8,7 @@ import { CategoryModule } from "@/modules/category/category.module";
 import { HallModule } from "@/modules/hall/hall.module";
 import { MediaModule } from "@/modules/media/media.module";
 import { MovieModule } from "@/modules/movie/movie.module";
+import { ScreeningModule } from "@/modules/screening/screening.module";
 import { SeatModule } from "@/modules/seat/seat.module";
 import { TheaterModule } from "@/modules/theater/theater.module";
 import { UsersModule } from "@/modules/users/users.module";
@@ -40,6 +41,7 @@ import { getPassportConfig } from "./config";
 		TheaterModule,
 		HallModule,
 		SeatModule,
+		ScreeningModule,
 		MediaModule,
 	],
 	controllers: [AppController],
