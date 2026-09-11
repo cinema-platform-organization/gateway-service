@@ -4,6 +4,7 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 
 import { AccountModule } from "@/modules/account/account.module";
 import { AuthModule } from "@/modules/auth/auth.module";
+import { BookingModule } from "@/modules/booking/booking.module";
 import { CategoryModule } from "@/modules/category/category.module";
 import { HallModule } from "@/modules/hall/hall.module";
 import { MediaModule } from "@/modules/media/media.module";
@@ -46,6 +47,7 @@ import { getPassportConfig } from "./config";
 		ScreeningModule,
 		PaymentModule,
 		WebhookModule,
+		BookingModule,
 		MediaModule,
 	],
 	controllers: [AppController],
