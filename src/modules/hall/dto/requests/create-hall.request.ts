@@ -10,9 +10,9 @@ import {
 } from "class-validator";
 
 export enum SeatType {
-	CHAIR = "chair",
-	SOFA2 = "sofa2",
-	SOFA3 = "sofa3",
+	STANDARD = "standard",
+	VIP = "vip",
+	PREMIUM = "premium",
 }
 
 class RowConfig {
@@ -29,7 +29,7 @@ class RowConfig {
 	public columns: number;
 
 	@ApiProperty({
-		example: SeatType.CHAIR,
+		example: SeatType.STANDARD,
 		enum: SeatType,
 	})
 	@IsEnum(SeatType)

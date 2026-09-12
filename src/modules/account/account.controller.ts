@@ -1,5 +1,5 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
-import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 import { CurrentUser, Protected } from "@/shared/decorators";
 
@@ -10,6 +10,7 @@ import {
 	InitEmailChangeRequest,
 	InitPhoneChangeRequest,
 } from "./dto";
+import { OkResponse } from "./dto/responses";
 
 @Controller("account")
 export class AccountController {
@@ -19,6 +20,7 @@ export class AccountController {
 		summary: "Init email change",
 		description: "Sends a confirmation code to a new email address.",
 	})
+	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Post("email/init")
@@ -35,6 +37,7 @@ export class AccountController {
 		description:
 			"Verifies a confirmation code and updates user email address.",
 	})
+	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Post("email/confirm")
@@ -53,6 +56,7 @@ export class AccountController {
 		summary: "Init phone change",
 		description: "Sends a confirmation code to a new phone number.",
 	})
+	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Post("phone/init")
@@ -69,6 +73,7 @@ export class AccountController {
 		description:
 			"Verifies a confirmation code and updates user phone number.",
 	})
+	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Post("phone/confirm")

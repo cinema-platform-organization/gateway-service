@@ -6,17 +6,26 @@ import {
 	Param,
 	Post,
 } from "@nestjs/common";
-import { ApiBearerAuth } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 import { CurrentUser, Protected } from "@/shared/decorators";
 
-import { InitPaymentRequest } from "./dto";
+import {
+	InitPaymentRequest,
+	InitPaymentResponse,
+	RefundPaymentResponse,
+} from "./dto";
 import { PaymentClientGrpc } from "./payment.grpc";
 
 @Controller("payment")
 export class PaymentController {
 	public constructor(private readonly client: PaymentClientGrpc) {}
 
+	@ApiOperation({
+		summary: "Init payment",
+		description: "Initiates a payment for a booking.",
+	})
+	@ApiOkResponse({ type: InitPaymentResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Post("init")
@@ -31,6 +40,11 @@ export class PaymentController {
 		});
 	}
 
+	@ApiOperation({
+		summary: "Refund payment",
+		description: "Refunds a previously made payment by its id.",
+	})
+	@ApiOkResponse({ type: RefundPaymentResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Post("refund/:id")

@@ -6,8 +6,9 @@ import {
 	Param,
 	Query,
 } from "@nestjs/common";
+import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
-import { GetMoviesRequest } from "./dto";
+import { GetMoviesRequest, GetMoviesResponse } from "./dto";
 import { MovieClientGrpc } from "./movie.grpc";
 import { MovieMapper } from "./movie.mapper";
 
@@ -15,6 +16,11 @@ import { MovieMapper } from "./movie.mapper";
 export class MovieController {
 	public constructor(private readonly client: MovieClientGrpc) {}
 
+	@ApiOperation({
+		summary: "Get movies",
+		description: "Returns a filtered list of movies.",
+	})
+	@ApiOkResponse({ type: [GetMoviesResponse] })
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public async getAll(@Query() dto: GetMoviesRequest) {
@@ -25,6 +31,11 @@ export class MovieController {
 			: [];
 	}
 
+	@ApiOperation({
+		summary: "Get movie by slug",
+		description: "Returns a single movie by its slug.",
+	})
+	@ApiOkResponse({ type: GetMoviesResponse })
 	@Get(":slug")
 	@HttpCode(HttpStatus.OK)
 	public async getBySlug(@Param("slug") slug: string) {

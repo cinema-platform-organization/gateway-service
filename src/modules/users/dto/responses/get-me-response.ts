@@ -21,9 +21,6 @@ export class GetMeResponse {
 	})
 	public phone: string;
 
-	@ApiPropertyOptional({
-		example:
-			"https://cdn.cinema-platform.com/users/e0db4163fc2aab147599c750906396d3",
-	})
-	public avatar: string;
+	@ApiPropertyOptional({ example: "users/2ee7cf301d876120f24a7592c325f7d3" })
+	public avatar?: string;
 }

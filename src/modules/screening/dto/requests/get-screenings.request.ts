@@ -14,5 +14,5 @@ export class GetScreeningsRequest {
 	})
 	@IsOptional()
 	@IsISO8601()
-	public date: string;
+	public date?: string;
 }

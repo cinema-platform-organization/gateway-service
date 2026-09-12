@@ -10,11 +10,13 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { ApiOperation } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 import type { Request, Response } from "express";
 
 import { AuthClientGrpc } from "./auth.grpc";
 import {
+	AccessTokenResponse,
+	OkResponse,
 	SendOtpRequest,
 	TelegramFinalizeRequest,
 	TelegramVerifyRequest,
@@ -34,6 +36,7 @@ export class AuthController {
 		description:
 			"Sends a verification code to the user's phone number or email.",
 	})
+	@ApiOkResponse({ type: OkResponse })
 	@Post("otp/send")
 	@HttpCode(HttpStatus.OK)
 	public async sendOtp(@Body() dto: SendOtpRequest) {
@@ -45,6 +48,7 @@ export class AuthController {
 		description:
 			"Verifies the code sent to the user phone number or email and returns an access token.",
 	})
+	@ApiOkResponse({ type: AccessTokenResponse })
 	@Post("otp/verify")
 	@HttpCode(HttpStatus.OK)
 	public async verifyOtp(
@@ -72,6 +76,7 @@ export class AuthController {
 		summary: "Refresh access token",
 		description: "Renews access token using refresh token from cookies.",
 	})
+	@ApiOkResponse({ type: AccessTokenResponse })
 	@Post("refresh")
 	@HttpCode(HttpStatus.OK)
 	public async refresh(
@@ -98,6 +103,7 @@ export class AuthController {
 		summary: "Logout",
 		description: "Clears the refresh token cookie and logs the user out",
 	})
+	@ApiOkResponse({ type: OkResponse })
 	@Post("logout")
 	@HttpCode(HttpStatus.OK)
 	public async logout(@Res({ passthrough: true }) res: Response) {
@@ -112,12 +118,22 @@ export class AuthController {
 		return { ok: true };
 	}
 
+	@ApiOperation({
+		summary: "Initialize Telegram login",
+		description:
+			"Returns the data required to start the Telegram login flow.",
+	})
 	@Get("telegram")
 	@HttpCode(HttpStatus.OK)
 	public async telegramInit() {
 		return this.client.call("telegramInit", {});
 	}
 
+	@ApiOperation({
+		summary: "Verify Telegram login",
+		description:
+			"Verifies the payload returned by the Telegram login and returns either a redirect URL for account linking or an access token.",
+	})
 	@Post("telegram/verify")
 	@HttpCode(HttpStatus.OK)
 	public async telegramVerify(
@@ -148,6 +164,11 @@ export class AuthController {
 		throw new UnauthorizedException("Invalid Telegram login response");
 	}
 
+	@ApiOperation({
+		summary: "Finalize Telegram login",
+		description:
+			"Consumes the pending Telegram login/link request and completes authentication.",
+	})
 	@Post("telegram/finalize")
 	@HttpCode(HttpStatus.OK)
 	public async finalizeTelegramLogin(

@@ -28,7 +28,7 @@ import { CurrentUser, Protected } from "@/shared/decorators";
 
 import { MediaClientGrpc } from "../media/media.grpc";
 
-import { GetMeResponse, PatchUserRequest } from "./dto";
+import { GetMeResponse, PatchUserRequest, PatchUserResponse } from "./dto";
 import { UsersClientGrpc } from "./users.grpc";
 
 @Controller("users")
@@ -55,6 +55,11 @@ export class UsersController {
 		return user;
 	}
 
+	@ApiOperation({
+		summary: "Update current user profile",
+		description: "Updates authenticated user profile data.",
+	})
+	@ApiOkResponse({ type: PatchUserResponse })
 	@ApiBearerAuth()
 	@Protected()
 	@Patch("@me")
@@ -70,6 +75,7 @@ export class UsersController {
 		summary: "Update user avatar",
 		description: "Uploads a new avatar for the authenticated user",
 	})
+	@ApiOkResponse({ type: PatchUserResponse })
 	@ApiConsumes("multipart/form-data")
 	@ApiBody({
 		description: "Image file to upload",
