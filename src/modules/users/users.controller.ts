@@ -20,6 +20,7 @@ import {
 	ApiOkResponse,
 	ApiOperation,
 } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 import { randomBytes } from "crypto";
 import type { Express } from "express";
 import "multer";
@@ -87,6 +88,7 @@ export class UsersController {
 		},
 	})
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 5, ttl: 60000 } })
 	@UseInterceptors(FileInterceptor("file"))
 	@Protected()
 	@Patch("@me/avatar")

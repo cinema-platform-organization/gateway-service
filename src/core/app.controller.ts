@@ -1,5 +1,6 @@
 import { Controller, Get } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { SkipThrottle } from "@nestjs/throttler";
 
 import { AppService } from "./app.service";
 
@@ -24,6 +25,7 @@ export class AppController {
 		type: Object,
 		description: "Returns a health check object.",
 	})
+	@SkipThrottle()
 	@Get("health")
 	public health() {
 		return this.appService.getHealth();

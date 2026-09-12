@@ -1,5 +1,6 @@
 import { Controller, Get, HttpCode, HttpStatus, Param } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 
 import { GetSeatsByHallResponse } from "./dto";
 import { SeatClientGrpc } from "./seat.grpc";
@@ -14,6 +15,7 @@ export class SeatController {
 			"Returns the list of seats for a hall and their availability for a given screening.",
 	})
 	@ApiOkResponse({ type: [GetSeatsByHallResponse] })
+	@Throttle({ default: { limit: 120, ttl: 60000 } })
 	@Get(":hall_id/:screening_id")
 	@HttpCode(HttpStatus.OK)
 	public async listSeatsByHall(

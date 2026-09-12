@@ -10,7 +10,8 @@ import {
 	UnauthorizedException,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiOkResponse, ApiOperation, getSchemaPath } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 import type { Request, Response } from "express";
 
 import { AuthClientGrpc } from "./auth.grpc";
@@ -19,6 +20,7 @@ import {
 	OkResponse,
 	SendOtpRequest,
 	TelegramFinalizeRequest,
+	TelegramInitResponse,
 	TelegramVerifyRequest,
 	VerifyOtpRequest,
 } from "./dto";
@@ -37,6 +39,7 @@ export class AuthController {
 			"Sends a verification code to the user's phone number or email.",
 	})
 	@ApiOkResponse({ type: OkResponse })
+	@Throttle({ default: { limit: 5, ttl: 60000 } })
 	@Post("otp/send")
 	@HttpCode(HttpStatus.OK)
 	public async sendOtp(@Body() dto: SendOtpRequest) {
@@ -49,6 +52,7 @@ export class AuthController {
 			"Verifies the code sent to the user phone number or email and returns an access token.",
 	})
 	@ApiOkResponse({ type: AccessTokenResponse })
+	@Throttle({ default: { limit: 5, ttl: 60000 } })
 	@Post("otp/verify")
 	@HttpCode(HttpStatus.OK)
 	public async verifyOtp(
@@ -134,6 +138,15 @@ export class AuthController {
 		description:
 			"Verifies the payload returned by the Telegram login and returns either a redirect URL for account linking or an access token.",
 	})
+	@ApiOkResponse({
+		schema: {
+			oneOf: [
+				{ $ref: getSchemaPath(AccessTokenResponse) },
+				{ $ref: getSchemaPath(TelegramInitResponse) },
+			],
+		},
+	})
+	@Throttle({ default: { limit: 10, ttl: 60000 } })
 	@Post("telegram/verify")
 	@HttpCode(HttpStatus.OK)
 	public async telegramVerify(
@@ -169,6 +182,8 @@ export class AuthController {
 		description:
 			"Consumes the pending Telegram login/link request and completes authentication.",
 	})
+	@ApiOkResponse({ type: AccessTokenResponse })
+	@Throttle({ default: { limit: 10, ttl: 60000 } })
 	@Post("telegram/finalize")
 	@HttpCode(HttpStatus.OK)
 	public async finalizeTelegramLogin(

@@ -7,6 +7,7 @@ import {
 	Post,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 
 import { CurrentUser, Protected } from "@/shared/decorators";
 
@@ -27,6 +28,7 @@ export class PaymentController {
 	})
 	@ApiOkResponse({ type: InitPaymentResponse })
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 10, ttl: 60000 } })
 	@Protected()
 	@Post("init")
 	@HttpCode(HttpStatus.OK)
@@ -46,6 +48,7 @@ export class PaymentController {
 	})
 	@ApiOkResponse({ type: RefundPaymentResponse })
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 10, ttl: 60000 } })
 	@Protected()
 	@Post("refund/:id")
 	@HttpCode(HttpStatus.OK)

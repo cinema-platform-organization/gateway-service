@@ -1,6 +1,8 @@
 import { PassportModule } from "@cinema-platform/passport";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { APP_GUARD } from "@nestjs/core";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 import { AccountModule } from "@/modules/account/account.module";
 import { AuthModule } from "@/modules/auth/auth.module";
@@ -31,6 +33,12 @@ import { getPassportConfig } from "./config";
 				".env",
 			],
 		}),
+		ThrottlerModule.forRoot([
+			{
+				ttl: 60000, // 1 minute, in ms
+				limit: 60, // 60 requests/minute per IP
+			},
+		]),
 		PassportModule.registerAsync({
 			useFactory: getPassportConfig,
 			inject: [ConfigService],
@@ -51,6 +59,12 @@ import { getPassportConfig } from "./config";
 		MediaModule,
 	],
 	controllers: [AppController],
-	providers: [AppService],
+	providers: [
+		AppService,
+		{
+			provide: APP_GUARD,
+			useClass: ThrottlerGuard,
+		},
+	],
 })
 export class AppModule {}

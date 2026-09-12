@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from "@nestjs/common";
 import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { Throttle } from "@nestjs/throttler";
 
 import { CurrentUser, Protected } from "@/shared/decorators";
 
@@ -22,6 +23,7 @@ export class AccountController {
 	})
 	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 5, ttl: 60000 } })
 	@Protected()
 	@Post("email/init")
 	@HttpCode(HttpStatus.OK)
@@ -39,6 +41,7 @@ export class AccountController {
 	})
 	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 10, ttl: 60000 } })
 	@Protected()
 	@Post("email/confirm")
 	@HttpCode(HttpStatus.OK)
@@ -58,6 +61,7 @@ export class AccountController {
 	})
 	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 5, ttl: 60000 } })
 	@Protected()
 	@Post("phone/init")
 	@HttpCode(HttpStatus.OK)
@@ -75,6 +79,7 @@ export class AccountController {
 	})
 	@ApiOkResponse({ type: OkResponse })
 	@ApiBearerAuth()
+	@Throttle({ default: { limit: 10, ttl: 60000 } })
 	@Protected()
 	@Post("phone/confirm")
 	@HttpCode(HttpStatus.OK)
