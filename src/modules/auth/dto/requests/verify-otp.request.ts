@@ -11,7 +11,7 @@ import {
 import { IdentifierValidator } from "@/shared/validators";
 
 export class VerifyOtpRequest {
-	@ApiProperty({ example: "+1234567890" })
+	@ApiProperty({ example: "cinema-platform@gmail.com" })
 	@IsString()
 	@Validate(IdentifierValidator)
 	public identifier: string;
@@ -22,7 +22,7 @@ export class VerifyOtpRequest {
 	@Length(6, 6)
 	public code: string;
 
-	@ApiProperty({ example: "phone", enum: ["phone", "email"] })
+	@ApiProperty({ example: "email", enum: ["phone", "email"] })
 	@IsEnum(["phone", "email"])
 	public type: "phone" | "email";
 }

@@ -6,7 +6,7 @@ import {
 	HttpStatus,
 	Post,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 import { Protected } from "@/shared/decorators";
 import { Role } from "@/shared/guards";
@@ -40,6 +40,7 @@ export class TheaterController {
 		description: "Creates a new theater. Admin only.",
 	})
 	@ApiOkResponse({ type: CreateTheaterResponse })
+	@ApiBearerAuth()
 	@Protected(Role.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)

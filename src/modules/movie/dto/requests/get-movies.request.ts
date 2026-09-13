@@ -37,11 +37,22 @@ export class GetMoviesRequest {
 
 	@ApiPropertyOptional({
 		example: 12,
+		default: 10,
 	})
 	@IsOptional()
 	@IsInt()
 	@Min(1)
 	@Max(100)
-	@Transform(({ value }) => (value !== undefined ? Number(value) : undefined))
-	public limit: number;
+	@Transform(({ value }) => (value !== undefined ? Number(value) : 20))
+	public limit: number = 10;
+
+	@ApiPropertyOptional({
+		example: 1,
+		default: 1,
+	})
+	@IsOptional()
+	@IsInt()
+	@Min(1)
+	@Transform(({ value }) => (value !== undefined ? Number(value) : 1))
+	public page: number = 1;
 }

@@ -8,7 +8,11 @@ import {
 } from "@nestjs/common";
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
-import { GetMoviesRequest, GetMoviesResponse } from "./dto";
+import {
+	GetMoviesRequest,
+	GetMoviesResponse,
+	PaginatedMoviesResponse,
+} from "./dto";
 import { MovieClientGrpc } from "./movie.grpc";
 import { MovieMapper } from "./movie.mapper";
 
@@ -18,17 +22,26 @@ export class MovieController {
 
 	@ApiOperation({
 		summary: "Get movies",
-		description: "Returns a filtered list of movies.",
+		description: "Returns a paginated, filtered list of movies.",
 	})
-	@ApiOkResponse({ type: [GetMoviesResponse] })
+	@ApiOkResponse({ type: PaginatedMoviesResponse })
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public async getAll(@Query() dto: GetMoviesRequest) {
 		const response = await this.client.call("listMovies", dto);
-
-		return Array.isArray(response.movies)
+		const movies = Array.isArray(response.movies)
 			? response.movies.map(movie => MovieMapper.toMovie(movie))
 			: [];
+
+		const page = dto.random ? 1 : dto.page;
+
+		return {
+			data: movies,
+			page,
+			limit: dto.limit,
+			total: response.total,
+			totalPages: dto.random ? 1 : Math.ceil(response.total / dto.limit),
+		};
 	}
 
 	@ApiOperation({

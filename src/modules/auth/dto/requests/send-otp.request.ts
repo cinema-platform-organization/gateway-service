@@ -4,12 +4,12 @@ import { IsEnum, IsString, Validate } from "class-validator";
 import { IdentifierValidator } from "@/shared/validators";
 
 export class SendOtpRequest {
-	@ApiProperty({ example: "+1234567890" })
+	@ApiProperty({ example: "cinema-platform@gmail.com" })
 	@IsString()
 	@Validate(IdentifierValidator)
 	public identifier: string;
 
-	@ApiProperty({ example: "phone", enum: ["phone", "email"] })
+	@ApiProperty({ example: "email", enum: ["phone", "email"] })
 	@IsEnum(["phone", "email"])
 	public type: "phone" | "email";
 }

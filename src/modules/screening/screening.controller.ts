@@ -8,7 +8,7 @@ import {
 	Post,
 	Query,
 } from "@nestjs/common";
-import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 import { Protected } from "@/shared/decorators";
 import { Role } from "@/shared/guards";
@@ -17,9 +17,9 @@ import {
 	CreateScreeningRequest,
 	CreateScreeningResponse,
 	GetScreeningResponse,
-	GetScreeningsByMovieResponse,
+	GetScreeningsByMovieRequest,
 	GetScreeningsRequest,
-	GetScreeningsResponse,
+	PaginatedScreeningsResponse,
 } from "./dto";
 import { ScreeningClientGrpc } from "./screening.grpc";
 
@@ -32,6 +32,7 @@ export class ScreeningController {
 		description: "Creates a new screening.",
 	})
 	@ApiOkResponse({ type: CreateScreeningResponse })
+	@ApiBearerAuth()
 	@Protected(Role.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -41,35 +42,55 @@ export class ScreeningController {
 
 	@ApiOperation({
 		summary: "Get screenings",
-		description: "Returns a filtered list of screenings.",
+		description: "Returns a paginated, filtered list of screenings.",
 	})
-	@ApiOkResponse({ type: [GetScreeningsResponse] })
+	@ApiOkResponse({ type: PaginatedScreeningsResponse })
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public async getAll(@Query() dto: GetScreeningsRequest) {
 		const response = await this.client.call("getScreenings", dto);
+		const screenings = Array.isArray(response.screenings)
+			? response.screenings
+			: [];
 
-		return Array.isArray(response.screenings) ? response.screenings : [];
+		return {
+			data: screenings,
+			page: dto.page,
+			limit: dto.limit,
+			total: response.total,
+			totalPages: Math.ceil(response.total / dto.limit),
+		};
 	}
 
 	@ApiOperation({
 		summary: "Get screenings by movie",
 		description:
-			"Returns screenings for a given movie, optionally filtered by date.",
+			"Returns a paginated list of screenings for a given movie, optionally filtered by date.",
 	})
-	@ApiOkResponse({ type: [GetScreeningsByMovieResponse] })
+	@ApiOkResponse({ type: PaginatedScreeningsResponse })
 	@Get("movie/:id")
 	@HttpCode(HttpStatus.OK)
 	public async getByMovie(
 		@Param("id") movieId: string,
-		@Query("date") date?: string,
+		@Query() dto: GetScreeningsByMovieRequest,
 	) {
 		const response = await this.client.call("getScreeningsByMovie", {
 			movieId,
-			date,
+			date: dto.date,
+			limit: dto.limit,
+			page: dto.page,
 		});
+		const screenings = Array.isArray(response.screenings)
+			? response.screenings
+			: [];
 
-		return Array.isArray(response.screenings) ? response.screenings : [];
+		return {
+			data: screenings,
+			page: dto.page,
+			limit: dto.limit,
+			total: response.total,
+			totalPages: Math.ceil(response.total / dto.limit),
+		};
 	}
 
 	@ApiOperation({

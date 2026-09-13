@@ -47,7 +47,7 @@ export class ScreeningSeatType {
 	public price: number;
 }
 
-export class GetScreeningsResponse {
+export class GetScreeningsByMovieResponse {
 	@ApiProperty({ example: "X6KBMTnCDkbrPN_I0YXG8" })
 	public id: string;
 
