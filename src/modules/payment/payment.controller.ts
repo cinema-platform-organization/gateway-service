@@ -52,9 +52,9 @@ export class PaymentController {
 	@Protected()
 	@Post("refund/:id")
 	@HttpCode(HttpStatus.OK)
-	public async refundPayment(@Param("id") paymentId: string) {
+	public async refundPayment(@Param("id") bookingId: string) {
 		return this.client.call("refundPayment", {
-			paymentId,
+			bookingId,
 		});
 	}
 }
