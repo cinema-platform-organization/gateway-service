@@ -9,8 +9,8 @@ import {
 import { ApiOkResponse, ApiOperation } from "@nestjs/swagger";
 
 import {
+	GetMovieResponse,
 	GetMoviesRequest,
-	GetMoviesResponse,
 	PaginatedMoviesResponse,
 } from "./dto";
 import { MovieClientGrpc } from "./movie.grpc";
@@ -48,7 +48,7 @@ export class MovieController {
 		summary: "Get movie by slug",
 		description: "Returns a single movie by its slug.",
 	})
-	@ApiOkResponse({ type: GetMoviesResponse })
+	@ApiOkResponse({ type: GetMovieResponse })
 	@Get(":slug")
 	@HttpCode(HttpStatus.OK)
 	public async getBySlug(@Param("slug") slug: string) {

@@ -1,18 +1,37 @@
 import { ApiProperty } from "@nestjs/swagger";
 
+import {
+	ScreeningHallInfo,
+	ScreeningMovieInfo,
+	ScreeningSeatType,
+	ScreeningTheaterInfo,
+} from "./get-screenings-by-movie.response";
+
 export class GetScreeningResponse {
-	@ApiProperty({ example: "X6KBMTnCDkbrPN_I0YXG8" })
+	@ApiProperty({ example: "YszAkVVKt6Y4RTjfpmnrT" })
 	public id: string;
 
-	@ApiProperty({ example: "tZwcb0sTC-0eiRZHm59r9" })
-	public hallId: string;
-
-	@ApiProperty({ example: "026f20c4-4826-4bea-b5e0-72ce8dda53d4" })
-	public movieId: string;
-
-	@ApiProperty({ example: "2026-12-21 16:30:00.000" })
+	@ApiProperty({
+		example:
+			"Thu Sep 10 2026 10:00:00 GMT+0000 (Coordinated Universal Time)",
+	})
 	public startAt: string;
 
-	@ApiProperty({ example: "2026-12-21 19:30:00.000" })
+	@ApiProperty({
+		example:
+			"Thu Sep 10 2026 12:10:00 GMT+0000 (Coordinated Universal Time)",
+	})
 	public endAt: string;
+
+	@ApiProperty({ type: ScreeningTheaterInfo })
+	public theater: ScreeningTheaterInfo;
+
+	@ApiProperty({ type: ScreeningHallInfo })
+	public hall: ScreeningHallInfo;
+
+	@ApiProperty({ type: ScreeningMovieInfo })
+	public movie: ScreeningMovieInfo;
+
+	@ApiProperty({ type: [ScreeningSeatType] })
+	public seatTypes: ScreeningSeatType[];
 }
