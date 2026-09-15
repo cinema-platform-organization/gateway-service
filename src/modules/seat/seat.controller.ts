@@ -7,6 +7,7 @@ import {
 	HttpStatus,
 	Param,
 	Patch,
+	Query,
 } from "@nestjs/common";
 import {
 	ApiBearerAuth,
@@ -35,15 +36,15 @@ export class SeatController {
 	@ApiOperation({
 		summary: "Get seats by hall",
 		description:
-			"Returns the list of seats for a hall and their availability for a given screening.",
+			"Returns the list of seats for a hall. If a screeningId is provided, includes reservation status for that screening.",
 	})
 	@ApiOkResponse({ type: [GetSeatsByHallResponse] })
 	@Throttle({ default: { limit: 120, ttl: 60000 } })
-	@Get(":hall_id/:screening_id")
+	@Get("hall/:hallId")
 	@HttpCode(HttpStatus.OK)
 	public async listSeatsByHall(
-		@Param("hall_id") hallId: string,
-		@Param("screening_id") screeningId: string,
+		@Param("hallId") hallId: string,
+		@Query("screeningId") screeningId?: string,
 	) {
 		const response = await this.client.call("listSeatsByHall", {
 			hallId,
