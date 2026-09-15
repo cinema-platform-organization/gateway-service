@@ -26,7 +26,9 @@ import type { Express } from "express";
 import "multer";
 
 import { CurrentUser, Protected } from "@/shared/decorators";
+import { mapRole } from "@/shared/utils";
 
+import { AccountClientGrpc } from "../account/account.grpc";
 import { MediaClientGrpc } from "../media/media.grpc";
 
 import { GetMeResponse, PatchUserRequest, PatchUserResponse } from "./dto";
@@ -37,6 +39,7 @@ export class UsersController {
 	public constructor(
 		private readonly usersClient: UsersClientGrpc,
 		private readonly mediaClient: MediaClientGrpc,
+		private readonly accountClient: AccountClientGrpc,
 	) {}
 
 	@ApiOperation({
@@ -49,11 +52,12 @@ export class UsersController {
 	@Get("@me")
 	@HttpCode(HttpStatus.OK)
 	public async getMe(@CurrentUser() userId: string) {
-		const { user } = await this.usersClient.call("getMe", {
-			id: userId,
-		});
+		const [{ user }, account] = await Promise.all([
+			this.usersClient.call("getMe", { id: userId }),
+			this.accountClient.call("getAccount", { id: userId }),
+		]);
 
-		return user;
+		return { ...user, role: mapRole(account.role) };
 	}
 
 	@ApiOperation({

@@ -28,7 +28,7 @@ import "multer";
 
 import { Protected } from "@/shared/decorators";
 import { Role } from "@/shared/guards";
-import { imageFilePipe } from "@/shared/utils/validate-image-file";
+import { imageFilePipe } from "@/shared/utils";
 
 import { MediaClientGrpc } from "../media/media.grpc";
 

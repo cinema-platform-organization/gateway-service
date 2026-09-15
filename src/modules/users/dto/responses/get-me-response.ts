@@ -23,4 +23,10 @@ export class GetMeResponse {
 
 	@ApiPropertyOptional({ example: "users/2ee7cf301d876120f24a7592c325f7d3" })
 	public avatar?: string;
+
+	@ApiProperty({
+		example: "USER",
+		enum: ["USER", "ADMIN"],
+	})
+	public role: "USER" | "ADMIN";
 }
