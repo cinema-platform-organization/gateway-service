@@ -1,5 +1,5 @@
 import { ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
+import { Transform, TransformFnParams } from "class-transformer";
 import {
 	IsBoolean,
 	IsInt,
@@ -15,7 +15,11 @@ export class GetMoviesRequest {
 	})
 	@IsOptional()
 	@IsString()
-	@Transform(({ value }) => String(value).trim())
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		return typeof raw === "string" ? raw.trim() : raw;
+	})
 	public category?: string;
 
 	@ApiPropertyOptional({
@@ -23,15 +27,17 @@ export class GetMoviesRequest {
 	})
 	@IsOptional()
 	@IsBoolean()
-	@Transform(({ value }: { value: unknown }) => {
-		if (value === "true") {
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		if (raw === "true") {
 			return true;
 		}
-		if (value === "false") {
+		if (raw === "false") {
 			return false;
 		}
 
-		return value;
+		return raw;
 	})
 	public random?: boolean;
 
@@ -43,7 +49,11 @@ export class GetMoviesRequest {
 	@IsInt()
 	@Min(1)
 	@Max(100)
-	@Transform(({ value }) => (value !== undefined ? Number(value) : 10))
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		return raw !== undefined ? Number(raw) : 10;
+	})
 	public limit: number = 10;
 
 	@ApiPropertyOptional({
@@ -53,6 +63,10 @@ export class GetMoviesRequest {
 	@IsOptional()
 	@IsInt()
 	@Min(1)
-	@Transform(({ value }) => (value !== undefined ? Number(value) : 1))
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		return raw !== undefined ? Number(raw) : 1;
+	})
 	public page: number = 1;
 }

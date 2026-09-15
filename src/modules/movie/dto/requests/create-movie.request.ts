@@ -1,5 +1,5 @@
 import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
-import { Transform } from "class-transformer";
+import { Transform, TransformFnParams } from "class-transformer";
 import {
 	IsDateString,
 	IsInt,
@@ -31,13 +31,21 @@ export class CreateMovieRequest {
 	@ApiProperty({ example: 169 })
 	@IsInt()
 	@Min(1)
-	@Transform(({ value }) => Number(value))
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		return Number(raw);
+	})
 	public duration: number;
 
 	@ApiPropertyOptional({ example: 2014 })
 	@IsOptional()
 	@IsInt()
-	@Transform(({ value }) => Number(value))
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		return raw === undefined ? undefined : Number(raw);
+	})
 	public releaseYear?: number;
 
 	@ApiPropertyOptional({ example: "2014-11-07" })
@@ -50,7 +58,11 @@ export class CreateMovieRequest {
 	@IsInt()
 	@Min(0)
 	@Max(21)
-	@Transform(({ value }) => String(value))
+	@Transform(({ value }: TransformFnParams) => {
+		const raw = value as unknown;
+
+		return raw === undefined ? undefined : Number(raw);
+	})
 	public ratingAge?: number;
 
 	@ApiPropertyOptional({ example: "USA" })
