@@ -126,7 +126,28 @@ export class MovieController {
 	@ApiBody({
 		schema: {
 			type: "object",
+			required: ["title", "description", "duration", "poster"],
 			properties: {
+				title: { type: "string", example: "Interstellar" },
+				slug: { type: "string", example: "interstellar" },
+				description: {
+					type: "string",
+					example:
+						"A team of explorers travel through a wormhole in space.",
+				},
+				duration: { type: "integer", example: 169 },
+				releaseYear: { type: "integer", example: 2014 },
+				releaseDate: {
+					type: "string",
+					format: "date",
+					example: "2014-11-07",
+				},
+				ratingAge: { type: "integer", example: 12 },
+				country: { type: "string", example: "USA" },
+				categoryId: {
+					type: "string",
+					example: "026f20c4-4826-4bea-b5e0-72ce8dda53d4",
+				},
 				poster: { type: "string", format: "binary" },
 				banner: { type: "string", format: "binary" },
 			},
@@ -208,6 +229,26 @@ export class MovieController {
 		schema: {
 			type: "object",
 			properties: {
+				title: { type: "string", example: "Interstellar" },
+				slug: { type: "string", example: "interstellar" },
+				description: {
+					type: "string",
+					example:
+						"A team of explorers travel through a wormhole in space.",
+				},
+				duration: { type: "integer", example: 169 },
+				releaseYear: { type: "integer", example: 2014 },
+				releaseDate: {
+					type: "string",
+					format: "date",
+					example: "2014-11-07",
+				},
+				ratingAge: { type: "integer", example: 12 },
+				country: { type: "string", example: "USA" },
+				categoryId: {
+					type: "string",
+					example: "026f20c4-4826-4bea-b5e0-72ce8dda53d4",
+				},
 				poster: { type: "string", format: "binary" },
 				banner: { type: "string", format: "binary" },
 			},
