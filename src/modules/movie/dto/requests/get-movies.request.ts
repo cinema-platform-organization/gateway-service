@@ -11,12 +11,12 @@ import {
 
 export class GetMoviesRequest {
 	@ApiPropertyOptional({
-		example: "horror",
+		example: "now",
 	})
 	@IsOptional()
 	@IsString()
 	@Transform(({ value }) => String(value).trim())
-	public category: string;
+	public category?: string;
 
 	@ApiPropertyOptional({
 		example: true,
@@ -33,7 +33,7 @@ export class GetMoviesRequest {
 
 		return value;
 	})
-	public random: boolean;
+	public random?: boolean;
 
 	@ApiPropertyOptional({
 		example: 12,
@@ -43,7 +43,7 @@ export class GetMoviesRequest {
 	@IsInt()
 	@Min(1)
 	@Max(100)
-	@Transform(({ value }) => (value !== undefined ? Number(value) : 20))
+	@Transform(({ value }) => (value !== undefined ? Number(value) : 10))
 	public limit: number = 10;
 
 	@ApiPropertyOptional({

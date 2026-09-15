@@ -34,4 +34,10 @@ export class GetMovieResponse {
 
 	@ApiPropertyOptional({ example: "2014-11-07T00:00:00.000Z" })
 	public releaseDate?: string;
+
+	@ApiPropertyOptional({ example: 2014 })
+	public releaseYear?: number;
+
+	@ApiPropertyOptional({ example: "026f20c4-4826-4bea-b5e0-72ce8dda53d4" })
+	public categoryId?: string;
 }

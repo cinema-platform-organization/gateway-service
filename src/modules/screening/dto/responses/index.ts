@@ -3,3 +3,5 @@ export * from "./get-screenings-by-movie.response";
 export * from "./get-screening.response";
 export * from "./create-screening.response";
 export * from "./paginated-screenings.response";
+export * from "./update-screening.response";
+export * from "./delete-screening.response";

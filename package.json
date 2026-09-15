@@ -11,7 +11,7 @@
 		"start": "nest start",
 		"start:dev": "cross-env NODE_ENV=development nest start --watch",
 		"start:debug": "nest start --debug --watch",
-		"start:prod": "cross-env NODE_ENV=production node dist/main",
+		"start:prod": "cross-env NODE_ENV=production node dist/src/main",
 		"lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
 		"test": "jest",
 		"test:watch": "jest --watch",
@@ -21,7 +21,7 @@
 	},
 	"dependencies": {
 		"@cinema-platform/common": "^1.2.5",
-		"@cinema-platform/contracts": "^1.5.1",
+		"@cinema-platform/contracts": "^1.5.5",
 		"@cinema-platform/core": "^1.0.3",
 		"@cinema-platform/passport": "^1.0.0",
 		"@grpc/grpc-js": "^1.14.4",

@@ -124,6 +124,9 @@ export class UsersController {
 		)
 		file: Express.Multer.File,
 	) {
+		const { user } = await this.usersClient.call("getMe", { id: userId });
+		const previousAvatarKey = user?.avatar;
+
 		const response = await this.mediaClient.call("upload", {
 			fileName: randomBytes(16).toString("hex"),
 			folder: "users",
@@ -133,9 +136,17 @@ export class UsersController {
 			resizeHeight: 512,
 		});
 
-		return this.usersClient.call("patchUser", {
+		const result = await this.usersClient.call("patchUser", {
 			userId,
 			avatar: response.key,
 		});
+
+		if (previousAvatarKey) {
+			await this.mediaClient.call("delete", {
+				key: previousAvatarKey,
+			});
+		}
+
+		return result;
 	}
 }

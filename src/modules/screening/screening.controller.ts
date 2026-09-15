@@ -1,14 +1,21 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	HttpCode,
 	HttpStatus,
 	Param,
+	Patch,
 	Post,
 	Query,
 } from "@nestjs/common";
-import { ApiBearerAuth, ApiOkResponse, ApiOperation } from "@nestjs/swagger";
+import {
+	ApiBearerAuth,
+	ApiNotFoundResponse,
+	ApiOkResponse,
+	ApiOperation,
+} from "@nestjs/swagger";
 
 import { Protected } from "@/shared/decorators";
 import { Role } from "@/shared/guards";
@@ -16,10 +23,13 @@ import { Role } from "@/shared/guards";
 import {
 	CreateScreeningRequest,
 	CreateScreeningResponse,
+	DeleteScreeningResponse,
 	GetScreeningResponse,
 	GetScreeningsByMovieRequest,
 	GetScreeningsRequest,
 	PaginatedScreeningsResponse,
+	UpdateScreeningRequest,
+	UpdateScreeningResponse,
 } from "./dto";
 import { ScreeningClientGrpc } from "./screening.grpc";
 
@@ -98,11 +108,50 @@ export class ScreeningController {
 		description: "Returns a single screening by its id.",
 	})
 	@ApiOkResponse({ type: GetScreeningResponse })
+	@ApiNotFoundResponse()
 	@Get(":id")
 	@HttpCode(HttpStatus.OK)
 	public async getById(@Param("id") id: string) {
 		const response = await this.client.call("getScreening", { id });
 
 		return response.screening;
+	}
+
+	@ApiOperation({
+		summary: "Update screening",
+		description:
+			"Updates a screening's movie, hall, or time. Only provided fields are changed. Admin only.",
+	})
+	@ApiOkResponse({ type: UpdateScreeningResponse })
+	@ApiNotFoundResponse()
+	@ApiBearerAuth()
+	@Protected(Role.ADMIN)
+	@Patch(":id")
+	@HttpCode(HttpStatus.OK)
+	public async update(
+		@Param("id") id: string,
+		@Body() dto: UpdateScreeningRequest,
+	) {
+		const response = await this.client.call("updateScreening", {
+			id,
+			...dto,
+		});
+
+		return response.screening;
+	}
+
+	@ApiOperation({
+		summary: "Delete screening",
+		description:
+			"Deletes a screening. Fails if it already has bookings. Admin only.",
+	})
+	@ApiOkResponse({ type: DeleteScreeningResponse })
+	@ApiNotFoundResponse()
+	@ApiBearerAuth()
+	@Protected(Role.ADMIN)
+	@Delete(":id")
+	@HttpCode(HttpStatus.OK)
+	public async delete(@Param("id") id: string) {
+		return await this.client.call("deleteScreening", { id });
 	}
 }
