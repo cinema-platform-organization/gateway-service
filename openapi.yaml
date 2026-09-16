@@ -1,0 +1,2323 @@
+openapi: 3.0.0
+paths:
+    /:
+        get:
+            description: Returns a simple API welcome message.
+            operationId: AppController_getHello
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+            summary: Welcome endpoint
+            tags:
+                - App
+    /health:
+        get:
+            description: Checks if the gateway is running.
+            operationId: AppController_health
+            parameters: []
+            responses:
+                "200":
+                    description: Returns a health check object.
+                    content:
+                        application/json:
+                            schema:
+                                type: object
+            summary: Health check
+            tags:
+                - App
+    /metrics:
+        get:
+            operationId: PrometheusController_index
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - Prometheus
+    /auth/otp/send:
+        post:
+            description: Sends a verification code to the user's phone number or email.
+            operationId: AuthController_sendOtp
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/SendOtpRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OkResponse"
+            summary: Send otp code
+            tags:
+                - Auth
+    /auth/otp/verify:
+        post:
+            description: >-
+                Verifies the code sent to the user phone number or email and returns an
+                access token.
+            operationId: AuthController_verifyOtp
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/VerifyOtpRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AccessTokenResponse"
+            summary: Verify otp code
+            tags:
+                - Auth
+    /auth/refresh:
+        post:
+            description: Renews access token using refresh token from cookies.
+            operationId: AuthController_refresh
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AccessTokenResponse"
+            summary: Refresh access token
+            tags:
+                - Auth
+    /auth/logout:
+        post:
+            description: Clears the refresh token cookie and logs the user out
+            operationId: AuthController_logout
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OkResponse"
+            summary: Logout
+            tags:
+                - Auth
+    /auth/telegram:
+        get:
+            description: Returns the data required to start the Telegram login flow.
+            operationId: AuthController_telegramInit
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+            summary: Initialize Telegram login
+            tags:
+                - Auth
+    /auth/telegram/verify:
+        post:
+            description: >-
+                Verifies the payload returned by the Telegram login and returns either a
+                redirect URL for account linking or an access token.
+            operationId: AuthController_telegramVerify
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/TelegramVerifyRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                oneOf:
+                                    - $ref: "#/components/schemas/AccessTokenResponse"
+                                    - $ref: "#/components/schemas/TelegramInitResponse"
+            summary: Verify Telegram login
+            tags:
+                - Auth
+    /auth/telegram/finalize:
+        post:
+            description: >-
+                Consumes the pending Telegram login/link request and completes
+                authentication.
+            operationId: AuthController_finalizeTelegramLogin
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/TelegramFinalizeRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/AccessTokenResponse"
+            summary: Finalize Telegram login
+            tags:
+                - Auth
+    /account/email/init:
+        post:
+            description: Sends a confirmation code to a new email address.
+            operationId: AccountController_initEmailChange
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/InitEmailChangeRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OkResponse"
+            security:
+                - bearer: []
+            summary: Init email change
+            tags:
+                - Account
+    /account/email/confirm:
+        post:
+            description: Verifies a confirmation code and updates user email address.
+            operationId: AccountController_confirmEmailChange
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ConfirmEmailChangeRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OkResponse"
+            security:
+                - bearer: []
+            summary: Confirm email change
+            tags:
+                - Account
+    /account/phone/init:
+        post:
+            description: Sends a confirmation code to a new phone number.
+            operationId: AccountController_initPhoneChange
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/InitPhoneChangeRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OkResponse"
+            security:
+                - bearer: []
+            summary: Init phone change
+            tags:
+                - Account
+    /account/phone/confirm:
+        post:
+            description: Verifies a confirmation code and updates user phone number.
+            operationId: AccountController_confirmPhoneChange
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/ConfirmPhoneChangeRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/OkResponse"
+            security:
+                - bearer: []
+            summary: Confirm phone change
+            tags:
+                - Account
+    /users/@me:
+        get:
+            description: Returns authenticated user profile data.
+            operationId: UsersController_getMe
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetMeResponse"
+            security:
+                - bearer: []
+            summary: Get current user profile
+            tags:
+                - Users
+        patch:
+            description: Updates authenticated user profile data.
+            operationId: UsersController_patchUser
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/PatchUserRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PatchUserResponse"
+            security:
+                - bearer: []
+            summary: Update current user profile
+            tags:
+                - Users
+    /users/@me/avatar:
+        patch:
+            description: Uploads a new avatar for the authenticated user
+            operationId: UsersController_changeAvatar
+            parameters: []
+            requestBody:
+                required: true
+                description: Image file to upload
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                file:
+                                    type: string
+                                    format: binary
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PatchUserResponse"
+            security:
+                - bearer: []
+            summary: Update user avatar
+            tags:
+                - Users
+    /movies:
+        get:
+            description: Returns a paginated, filtered list of movies.
+            operationId: MovieController_getAll
+            parameters:
+                - name: category
+                  required: false
+                  in: query
+                  schema:
+                      example: now
+                      type: string
+                - name: random
+                  required: false
+                  in: query
+                  schema:
+                      example: true
+                      type: boolean
+                - name: limit
+                  required: false
+                  in: query
+                  schema:
+                      default: 10
+                      example: 12
+                      type: number
+                - name: page
+                  required: false
+                  in: query
+                  schema:
+                      default: 1
+                      example: 1
+                      type: number
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PaginatedMoviesResponse"
+            summary: Get movies
+            tags:
+                - Movie
+        post:
+            description: Creates a new movie with a poster and optional banner. Admin only.
+            operationId: MovieController_create
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            required:
+                                - title
+                                - description
+                                - duration
+                                - poster
+                            properties:
+                                title:
+                                    type: string
+                                    example: Interstellar
+                                slug:
+                                    type: string
+                                    example: interstellar
+                                description:
+                                    type: string
+                                    example: A team of explorers travel through a wormhole in space.
+                                duration:
+                                    type: integer
+                                    example: 169
+                                releaseYear:
+                                    type: integer
+                                    example: 2014
+                                releaseDate:
+                                    type: string
+                                    format: date
+                                    example: "2014-11-07"
+                                ratingAge:
+                                    type: integer
+                                    example: 12
+                                country:
+                                    type: string
+                                    example: USA
+                                categoryId:
+                                    type: string
+                                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                                poster:
+                                    type: string
+                                    format: binary
+                                banner:
+                                    type: string
+                                    format: binary
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CreateMovieResponse"
+            security:
+                - bearer: []
+            summary: Create movie
+            tags:
+                - Movie
+    /movies/id/{id}:
+        get:
+            description: Returns a single movie by its id, for admin editing.
+            operationId: MovieController_getById
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetMovieResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Get movie by id
+            tags:
+                - Movie
+    /movies/{slug}:
+        get:
+            description: Returns a single movie by its slug.
+            operationId: MovieController_getBySlug
+            parameters:
+                - name: slug
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetMovieResponse"
+                "404":
+                    description: ""
+            summary: Get movie by slug
+            tags:
+                - Movie
+    /movies/{id}:
+        patch:
+            description: >-
+                Updates a movie. Only provided fields are changed. Replacing
+                poster/banner deletes the old file. Admin only.
+            operationId: MovieController_update
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    multipart/form-data:
+                        schema:
+                            type: object
+                            properties:
+                                title:
+                                    type: string
+                                    example: Interstellar
+                                slug:
+                                    type: string
+                                    example: interstellar
+                                description:
+                                    type: string
+                                    example: A team of explorers travel through a wormhole in space.
+                                duration:
+                                    type: integer
+                                    example: 169
+                                releaseYear:
+                                    type: integer
+                                    example: 2014
+                                releaseDate:
+                                    type: string
+                                    format: date
+                                    example: "2014-11-07"
+                                ratingAge:
+                                    type: integer
+                                    example: 12
+                                country:
+                                    type: string
+                                    example: USA
+                                categoryId:
+                                    type: string
+                                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                                poster:
+                                    type: string
+                                    format: binary
+                                banner:
+                                    type: string
+                                    format: binary
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UpdateMovieResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Update movie
+            tags:
+                - Movie
+        delete:
+            description: >-
+                Deletes a movie and its images. Fails if it has upcoming screenings.
+                Admin only.
+            operationId: MovieController_delete
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DeleteMovieResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Delete movie
+            tags:
+                - Movie
+    /categories:
+        get:
+            description: Returns the list of all available categories.
+            operationId: CategoryController_getAll
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/GetCategoriesResponse"
+            summary: Get all categories
+            tags:
+                - Category
+        post:
+            description: Creates a new category. Admin only.
+            operationId: CategoryController_create
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateCategoryRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CreateCategoryResponse"
+            security:
+                - bearer: []
+            summary: Create category
+            tags:
+                - Category
+    /categories/{id}:
+        get:
+            description: Returns a single category by its id.
+            operationId: CategoryController_getById
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetCategoriesResponse"
+                "404":
+                    description: ""
+            summary: Get category by id
+            tags:
+                - Category
+        patch:
+            description: Updates a category. Only provided fields are changed. Admin only.
+            operationId: CategoryController_update
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateCategoryRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UpdateCategoryResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Update category
+            tags:
+                - Category
+        delete:
+            description: Deletes a category. Fails if any movies still reference it. Admin only.
+            operationId: CategoryController_delete
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DeleteCategoryResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Delete category
+            tags:
+                - Category
+    /theaters:
+        get:
+            description: Returns the list of all theaters.
+            operationId: TheaterController_getAll
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/GetTheatersResponse"
+            summary: Get all theaters
+            tags:
+                - Theater
+        post:
+            description: Creates a new theater. Admin only.
+            operationId: TheaterController_create
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateTheaterRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CreateTheaterResponse"
+            security:
+                - bearer: []
+            summary: Create theater
+            tags:
+                - Theater
+    /theaters/{id}:
+        get:
+            description: Returns a single theater by its id.
+            operationId: TheaterController_getById
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetTheatersResponse"
+                "404":
+                    description: ""
+            summary: Get theater by id
+            tags:
+                - Theater
+        patch:
+            description: Updates a theater. Only provided fields are changed. Admin only.
+            operationId: TheaterController_update
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateTheaterRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UpdateTheaterResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Update theater
+            tags:
+                - Theater
+        delete:
+            description: >-
+                Deletes a theater. Fails if the theater has upcoming screenings. Admin
+                only.
+            operationId: TheaterController_delete
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DeleteTheaterResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Delete theater
+            tags:
+                - Theater
+    /halls:
+        get:
+            description: Returns the list of halls belonging to a given theater.
+            operationId: HallController_getAll
+            parameters:
+                - name: theaterId
+                  required: true
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/GetHallsResponse"
+            summary: Get halls by theater
+            tags:
+                - Hall
+        post:
+            description: Creates a new hall. Admin only.
+            operationId: HallController_create
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateHallRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CreateHallResponse"
+            security:
+                - bearer: []
+            summary: Create hall
+            tags:
+                - Hall
+    /halls/{id}:
+        get:
+            description: Returns a single hall by its id.
+            operationId: HallController_getById
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetHallResponse"
+                "404":
+                    description: ""
+            summary: Get hall by id
+            tags:
+                - Hall
+        patch:
+            description: Updates a hall. Only provided fields are changed. Admin only.
+            operationId: HallController_update
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateHallRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UpdateHallResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Update hall
+            tags:
+                - Hall
+        delete:
+            description: Deletes a hall. Fails if the hall has upcoming screenings. Admin only.
+            operationId: HallController_delete
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DeleteHallResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Delete hall
+            tags:
+                - Hall
+    /seats/hall/{hallId}:
+        get:
+            description: >-
+                Returns the list of seats for a hall. If a screeningId is provided,
+                includes reservation status for that screening.
+            operationId: SeatController_listSeatsByHall
+            parameters:
+                - name: hallId
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+                - name: screeningId
+                  required: true
+                  in: query
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: "#/components/schemas/GetSeatsByHallResponse"
+            summary: Get seats by hall
+            tags:
+                - Seat
+    /seats/{id}:
+        get:
+            description: Returns a single seat by its id, for admin editing.
+            operationId: SeatController_getById
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetSeatResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Get seat by id
+            tags:
+                - Seat
+        patch:
+            description: >-
+                Updates a seat's price or type. Only provided fields are changed. Admin
+                only.
+            operationId: SeatController_update
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateSeatRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UpdateSeatResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Update seat
+            tags:
+                - Seat
+        delete:
+            description: Deletes a seat. Fails if its hall has upcoming screenings. Admin only.
+            operationId: SeatController_delete
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DeleteSeatResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Delete seat
+            tags:
+                - Seat
+    /screenings:
+        post:
+            description: Creates a new screening.
+            operationId: ScreeningController_create
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/CreateScreeningRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/CreateScreeningResponse"
+            security:
+                - bearer: []
+            summary: Create screening
+            tags:
+                - Screening
+        get:
+            description: Returns a paginated, filtered list of screenings.
+            operationId: ScreeningController_getAll
+            parameters:
+                - name: theaterId
+                  required: false
+                  in: query
+                  schema:
+                      example: 81lI6j9Ctva6e7oCPpelc
+                      type: string
+                - name: date
+                  required: false
+                  in: query
+                  schema:
+                      example: "2025-11-08"
+                      type: string
+                - name: limit
+                  required: false
+                  in: query
+                  schema:
+                      default: 20
+                      example: 20
+                      type: number
+                - name: page
+                  required: false
+                  in: query
+                  schema:
+                      default: 1
+                      example: 1
+                      type: number
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PaginatedScreeningsResponse"
+            summary: Get screenings
+            tags:
+                - Screening
+    /screenings/movie/{id}:
+        get:
+            description: >-
+                Returns a paginated list of screenings for a given movie, optionally
+                filtered by date.
+            operationId: ScreeningController_getByMovie
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+                - name: date
+                  required: false
+                  in: query
+                  schema:
+                      example: "2025-11-08"
+                      type: string
+                - name: limit
+                  required: false
+                  in: query
+                  schema:
+                      default: 20
+                      example: 20
+                      type: number
+                - name: page
+                  required: false
+                  in: query
+                  schema:
+                      default: 1
+                      example: 1
+                      type: number
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PaginatedScreeningsResponse"
+            summary: Get screenings by movie
+            tags:
+                - Screening
+    /screenings/{id}:
+        get:
+            description: Returns a single screening by its id.
+            operationId: ScreeningController_getById
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/GetScreeningResponse"
+                "404":
+                    description: ""
+            summary: Get screening by id
+            tags:
+                - Screening
+        patch:
+            description: >-
+                Updates a screening's movie, hall, or time. Only provided fields are
+                changed. Admin only.
+            operationId: ScreeningController_update
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/UpdateScreeningRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/UpdateScreeningResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Update screening
+            tags:
+                - Screening
+        delete:
+            description: Deletes a screening. Fails if it already has bookings. Admin only.
+            operationId: ScreeningController_delete
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/DeleteScreeningResponse"
+                "404":
+                    description: ""
+            security:
+                - bearer: []
+            summary: Delete screening
+            tags:
+                - Screening
+    /payment/init:
+        post:
+            description: Initiates a payment for a booking.
+            operationId: PaymentController_initPayment
+            parameters: []
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/InitPaymentRequest"
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/InitPaymentResponse"
+            security:
+                - bearer: []
+            summary: Init payment
+            tags:
+                - Payment
+    /payment/refund/{id}:
+        post:
+            description: Refunds a previously made payment by its id.
+            operationId: PaymentController_refundPayment
+            parameters:
+                - name: id
+                  required: true
+                  in: path
+                  schema:
+                      type: string
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/RefundPaymentResponse"
+            security:
+                - bearer: []
+            summary: Refund payment
+            tags:
+                - Payment
+    /webhook/liqpay:
+        post:
+            operationId: WebhookController_handleLiqpay
+            parameters: []
+            responses:
+                "200":
+                    description: ""
+            tags:
+                - Webhook
+    /bookings:
+        get:
+            description: Returns a paginated list of bookings for the current user.
+            operationId: BookingController_getBookings
+            parameters:
+                - name: limit
+                  required: false
+                  in: query
+                  schema:
+                      default: 20
+                      example: 20
+                      type: number
+                - name: page
+                  required: false
+                  in: query
+                  schema:
+                      default: 1
+                      example: 1
+                      type: number
+            responses:
+                "200":
+                    description: ""
+                    content:
+                        application/json:
+                            schema:
+                                $ref: "#/components/schemas/PaginatedBookingsResponse"
+            security:
+                - bearer: []
+            summary: Get user bookings
+            tags:
+                - Booking
+info:
+    title: Cinema Platform API
+    description: API Gateway for Cinema Platform microservices
+    version: "1.0"
+    contact: {}
+tags: []
+servers: []
+components:
+    securitySchemes:
+        bearer:
+            scheme: bearer
+            bearerFormat: JWT
+            type: http
+    schemas:
+        SendOtpRequest:
+            type: object
+            properties:
+                identifier:
+                    type: string
+                    example: cinema-platform@gmail.com
+                type:
+                    type: string
+                    example: email
+                    enum:
+                        - phone
+                        - email
+            required:
+                - identifier
+                - type
+        OkResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        VerifyOtpRequest:
+            type: object
+            properties:
+                identifier:
+                    type: string
+                    example: cinema-platform@gmail.com
+                code:
+                    type: string
+                    example: "123456"
+                type:
+                    type: string
+                    example: email
+                    enum:
+                        - phone
+                        - email
+            required:
+                - identifier
+                - code
+                - type
+        AccessTokenResponse:
+            type: object
+            properties:
+                accessToken:
+                    type: string
+                    example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+            required:
+                - accessToken
+        TelegramVerifyRequest:
+            type: object
+            properties:
+                tgAuthResult:
+                    type: string
+                    example: eyJpZCI6NjE1NTg0Njk5MywiZmlyc3RfbmFtZSI6Ilx1MDQxMlx1MDQzMFx1MDQ...
+            required:
+                - tgAuthResult
+        TelegramFinalizeRequest:
+            type: object
+            properties:
+                sessionId:
+                    type: string
+                    example: 21a0885dee191ae17d1842db2aa426ee
+            required:
+                - sessionId
+        InitEmailChangeRequest:
+            type: object
+            properties:
+                email:
+                    type: string
+                    example: email@mail.cinema-platform.site
+            required:
+                - email
+        ConfirmEmailChangeRequest:
+            type: object
+            properties:
+                email:
+                    type: string
+                    example: email@mail.cinema-platform.site
+                code:
+                    type: string
+                    example: "123456"
+            required:
+                - email
+                - code
+        InitPhoneChangeRequest:
+            type: object
+            properties:
+                phone:
+                    type: string
+                    example: "+1234567890"
+            required:
+                - phone
+        ConfirmPhoneChangeRequest:
+            type: object
+            properties:
+                phone:
+                    type: string
+                    example: "+1234567890"
+                code:
+                    type: string
+                    example: "123456"
+            required:
+                - phone
+                - code
+        GetMeResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: X6KBMTnCDkbrPN_I0YXG8
+                name:
+                    type: string
+                    example: Someone
+                email:
+                    type: string
+                    example: email@mail.cinema-platform.site
+                phone:
+                    type: string
+                    example: "+1234567890"
+                avatar:
+                    type: string
+                    example: users/2ee7cf301d876120f24a7592c325f7d3
+                role:
+                    type: string
+                    example: USER
+                    enum:
+                        - USER
+                        - ADMIN
+            required:
+                - id
+                - email
+                - phone
+                - role
+        PatchUserRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: Someone
+            required:
+                - name
+        PatchUserResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        GetMoviesResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Interstellar
+                slug:
+                    type: string
+                    example: interstellar
+                poster:
+                    type: string
+                    example: posters/e0db4163fc2aab147599c750906396d3.jpg
+                ratingAge:
+                    type: number
+                    example: 12
+                releaseDate:
+                    type: string
+                    example: "2014-11-07T00:00:00.000Z"
+            required:
+                - id
+                - title
+                - poster
+        PaginatedMoviesResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/GetMoviesResponse"
+                page:
+                    type: number
+                    example: 1
+                limit:
+                    type: number
+                    example: 20
+                total:
+                    type: number
+                    example: 137
+                totalPages:
+                    type: number
+                    example: 7
+            required:
+                - data
+                - page
+                - limit
+                - total
+                - totalPages
+        GetMovieResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Interstellar
+                slug:
+                    type: string
+                    example: interstellar
+                description:
+                    type: string
+                    example: A team of explorers travel through a wormhole in space.
+                poster:
+                    type: string
+                    example: posters/e0db4163fc2aab147599c750906396d3.jpg
+                banner:
+                    type: string
+                    example: banners/e0db4163fc2aab147599c750906396d3.jpg
+                duration:
+                    type: number
+                    example: 169
+                ratingAge:
+                    type: number
+                    example: 12
+                country:
+                    type: string
+                    example: USA
+                releaseDate:
+                    type: string
+                    example: "2014-11-07T00:00:00.000Z"
+                releaseYear:
+                    type: number
+                    example: 2014
+                categoryId:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+            required:
+                - id
+                - title
+                - description
+                - poster
+                - duration
+        CreateMovieResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Interstellar
+                slug:
+                    type: string
+                    example: interstellar
+                description:
+                    type: string
+                    example: A team of explorers travel through a wormhole in space.
+                poster:
+                    type: string
+                    example: posters/e0db4163fc2aab147599c750906396d3.jpg
+                banner:
+                    type: string
+                    example: banners/e0db4163fc2aab147599c750906396d3.jpg
+                duration:
+                    type: number
+                    example: 169
+                ratingAge:
+                    type: number
+                    example: 12
+                country:
+                    type: string
+                    example: USA
+                releaseDate:
+                    type: string
+                    example: "2014-11-07T00:00:00.000Z"
+                releaseYear:
+                    type: number
+                    example: 2014
+                categoryId:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+            required:
+                - id
+                - title
+                - description
+                - poster
+                - duration
+        UpdateMovieResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Interstellar
+                slug:
+                    type: string
+                    example: interstellar
+                description:
+                    type: string
+                    example: A team of explorers travel through a wormhole in space.
+                poster:
+                    type: string
+                    example: posters/e0db4163fc2aab147599c750906396d3.jpg
+                banner:
+                    type: string
+                    example: banners/e0db4163fc2aab147599c750906396d3.jpg
+                duration:
+                    type: number
+                    example: 169
+                ratingAge:
+                    type: number
+                    example: 12
+                country:
+                    type: string
+                    example: USA
+                releaseDate:
+                    type: string
+                    example: "2014-11-07T00:00:00.000Z"
+                releaseYear:
+                    type: number
+                    example: 2014
+                categoryId:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+            required:
+                - id
+                - title
+                - description
+                - poster
+                - duration
+        DeleteMovieResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        GetCategoriesResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Action
+                slug:
+                    type: string
+                    example: action
+            required:
+                - id
+                - title
+        CreateCategoryRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Action
+                slug:
+                    type: string
+                    example: action
+            required:
+                - title
+        CreateCategoryResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Action
+                slug:
+                    type: string
+                    example: action
+            required:
+                - id
+                - title
+        UpdateCategoryRequest:
+            type: object
+            properties:
+                title:
+                    type: string
+                    example: Action
+                slug:
+                    type: string
+                    example: action
+        UpdateCategoryResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Action
+                slug:
+                    type: string
+                    example: action
+            required:
+                - id
+                - title
+        DeleteCategoryResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        GetTheatersResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 81lI6j9Ctva6e7oCPpelc
+                name:
+                    type: string
+                    example: Cinema City
+                address:
+                    type: string
+                    example: 123 Main St, Kyiv
+            required:
+                - id
+                - name
+                - address
+        CreateTheaterRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: Aurora
+                address:
+                    type: string
+                    example: 99 Kyiv St.
+            required:
+                - name
+                - address
+        CreateTheaterResponse:
+            type: object
+            properties:
+                theater:
+                    $ref: "#/components/schemas/GetTheatersResponse"
+            required:
+                - theater
+        UpdateTheaterRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: Aurora
+                address:
+                    type: string
+                    example: 99 Kyiv St.
+        UpdateTheaterResponse:
+            type: object
+            properties:
+                theater:
+                    $ref: "#/components/schemas/GetTheatersResponse"
+            required:
+                - theater
+        DeleteTheaterResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        GetHallsResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                name:
+                    type: string
+                    example: Hall 1
+                theaterId:
+                    type: string
+                    example: 81lI6j9Ctva6e7oCPpelc
+            required:
+                - id
+                - name
+                - theaterId
+        GetHallResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                name:
+                    type: string
+                    example: Hall 1
+                theaterId:
+                    type: string
+                    example: 81lI6j9Ctva6e7oCPpelc
+            required:
+                - id
+                - name
+                - theaterId
+        CreateHallRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: Hall 1
+                theaterId:
+                    type: string
+                    example: "123456"
+            required:
+                - name
+                - theaterId
+        CreateHallResponse:
+            type: object
+            properties:
+                hall:
+                    $ref: "#/components/schemas/GetHallResponse"
+            required:
+                - hall
+        UpdateHallRequest:
+            type: object
+            properties:
+                name:
+                    type: string
+                    example: Hall 1
+        UpdateHallResponse:
+            type: object
+            properties:
+                hall:
+                    $ref: "#/components/schemas/GetHallResponse"
+            required:
+                - hall
+        DeleteHallResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        GetSeatsByHallResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: kM2vRwYpQ8sN-4LzXbT7d
+                row:
+                    type: number
+                    example: 3
+                number:
+                    type: number
+                    example: 12
+                price:
+                    type: number
+                    example: 250
+                type:
+                    type: string
+                    example: vip
+                    enum:
+                        - standard
+                        - vip
+                        - premium
+                hallId:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                status:
+                    type: string
+                    example: available
+                    enum:
+                        - available
+                        - reserved
+            required:
+                - id
+                - row
+                - number
+                - price
+                - type
+                - hallId
+                - status
+        GetSeatResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: kM2vRwYpQ8sN-4LzXbT7d
+                row:
+                    type: number
+                    example: 3
+                number:
+                    type: number
+                    example: 12
+                price:
+                    type: number
+                    example: 250
+                type:
+                    type: string
+                    example: vip
+                    enum:
+                        - standard
+                        - vip
+                        - premium
+                hallId:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+            required:
+                - id
+                - row
+                - number
+                - price
+                - type
+                - hallId
+        UpdateSeatRequest:
+            type: object
+            properties:
+                price:
+                    type: number
+                    example: 300
+                type:
+                    type: string
+                    example: premium
+                    enum:
+                        - standard
+                        - vip
+                        - premium
+        UpdateSeatResponse:
+            type: object
+            properties:
+                seat:
+                    $ref: "#/components/schemas/GetSeatResponse"
+            required:
+                - seat
+        DeleteSeatResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        CreateScreeningRequest:
+            type: object
+            properties:
+                movieId:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                hallId:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                startAt:
+                    type: string
+                    example: "2026-12-21 16:30:00.000"
+                endAt:
+                    type: string
+                    example: "2026-12-21 19:30:00.000"
+            required:
+                - movieId
+                - hallId
+                - startAt
+                - endAt
+        CreateScreeningResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        ScreeningTheaterInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 81lI6j9Ctva6e7oCPpelc
+                name:
+                    type: string
+                    example: Cinema City
+                address:
+                    type: string
+                    example: 123 Main St, Kyiv
+            required:
+                - id
+                - name
+                - address
+        ScreeningHallInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                name:
+                    type: string
+                    example: Hall 1
+            required:
+                - id
+                - name
+        ScreeningMovieInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Interstellar
+                slug:
+                    type: string
+                    example: interstellar
+                duration:
+                    type: number
+                    example: 169
+                banner:
+                    type: string
+                    example: banners/e0db4163fc2aab147599c750906396d3.jpg
+                poster:
+                    type: string
+                    example: posters/e0db4163fc2aab147599c750906396d3.jpg
+            required:
+                - id
+                - title
+                - slug
+                - duration
+                - banner
+                - poster
+        ScreeningSeatType:
+            type: object
+            properties:
+                type:
+                    type: string
+                    example: vip
+                price:
+                    type: number
+                    example: 250
+            required:
+                - type
+                - price
+        GetScreeningsResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: X6KBMTnCDkbrPN_I0YXG8
+                startAt:
+                    type: string
+                    example: "2026-12-21 16:30:00.000"
+                endAt:
+                    type: string
+                    example: "2026-12-21 19:30:00.000"
+                theater:
+                    $ref: "#/components/schemas/ScreeningTheaterInfo"
+                hall:
+                    $ref: "#/components/schemas/ScreeningHallInfo"
+                movie:
+                    $ref: "#/components/schemas/ScreeningMovieInfo"
+                seatTypes:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/ScreeningSeatType"
+            required:
+                - id
+                - startAt
+                - endAt
+                - theater
+                - hall
+                - movie
+                - seatTypes
+        PaginatedScreeningsResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/GetScreeningsResponse"
+                page:
+                    type: number
+                    example: 1
+                limit:
+                    type: number
+                    example: 20
+                total:
+                    type: number
+                    example: 84
+                totalPages:
+                    type: number
+                    example: 5
+            required:
+                - data
+                - page
+                - limit
+                - total
+                - totalPages
+        GetScreeningResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: YszAkVVKt6Y4RTjfpmnrT
+                startAt:
+                    type: string
+                    example: Thu Sep 10 2026 10:00:00 GMT+0000 (Coordinated Universal Time)
+                endAt:
+                    type: string
+                    example: Thu Sep 10 2026 12:10:00 GMT+0000 (Coordinated Universal Time)
+                theater:
+                    $ref: "#/components/schemas/ScreeningTheaterInfo"
+                hall:
+                    $ref: "#/components/schemas/ScreeningHallInfo"
+                movie:
+                    $ref: "#/components/schemas/ScreeningMovieInfo"
+                seatTypes:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/ScreeningSeatType"
+            required:
+                - id
+                - startAt
+                - endAt
+                - theater
+                - hall
+                - movie
+                - seatTypes
+        UpdateScreeningRequest:
+            type: object
+            properties:
+                movieId:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                hallId:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                startAt:
+                    type: string
+                    example: "2026-12-21 16:30:00.000"
+                endAt:
+                    type: string
+                    example: "2026-12-21 19:30:00.000"
+        UpdateScreeningResponse:
+            type: object
+            properties:
+                screening:
+                    $ref: "#/components/schemas/GetScreeningResponse"
+            required:
+                - screening
+        DeleteScreeningResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        SeatDto:
+            type: object
+            properties:
+                seatId:
+                    type: string
+                    example: seat_123
+                price:
+                    type: number
+                    example: 250
+            required:
+                - seatId
+                - price
+        InitPaymentRequest:
+            type: object
+            properties:
+                screeningId:
+                    type: string
+                    example: screening_123
+                seats:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/SeatDto"
+                savePaymentMethod:
+                    type: boolean
+                    example: true
+                paymentMethodId:
+                    type: string
+                    example: pm_123
+            required:
+                - screeningId
+                - seats
+        InitPaymentResponse:
+            type: object
+            properties:
+                url:
+                    type: string
+                    example: https://www.liqpay.ua/api/3/checkout?data=...&signature=...
+            required:
+                - url
+        RefundPaymentResponse:
+            type: object
+            properties:
+                ok:
+                    type: boolean
+                    example: true
+            required:
+                - ok
+        BookingMovieInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 026f20c4-4826-4bea-b5e0-72ce8dda53d4
+                title:
+                    type: string
+                    example: Interstellar
+                poster:
+                    type: string
+                    example: posters/e0db4163fc2aab147599c750906396d3.jpg
+            required:
+                - id
+                - title
+                - poster
+        BookingTheaterInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: 81lI6j9Ctva6e7oCPpelc
+                name:
+                    type: string
+                    example: Cinema City
+            required:
+                - id
+                - name
+        BookingHallInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: tZwcb0sTC-0eiRZHm59r9
+                name:
+                    type: string
+                    example: Hall 1
+            required:
+                - id
+                - name
+        BookingSeatInfo:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: kM2vRwYpQ8sN-4LzXbT7d
+                row:
+                    type: number
+                    example: 3
+                number:
+                    type: number
+                    example: 12
+            required:
+                - id
+                - row
+                - number
+        GetBookingsResponse:
+            type: object
+            properties:
+                id:
+                    type: string
+                    example: X6KBMTnCDkbrPN_I0YXG8
+                screeningDate:
+                    type: string
+                    example: "2026-12-21"
+                screeningTime:
+                    type: string
+                    example: "16:30"
+                movie:
+                    $ref: "#/components/schemas/BookingMovieInfo"
+                theater:
+                    $ref: "#/components/schemas/BookingTheaterInfo"
+                hall:
+                    $ref: "#/components/schemas/BookingHallInfo"
+                seats:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/BookingSeatInfo"
+                qrCode:
+                    type: string
+                    example: aHR0cHM6Ly9jaW5lbWEtcGxhdGZvcm0uY29tL29yZGVyLzEyMw==
+            required:
+                - id
+                - screeningDate
+                - screeningTime
+                - movie
+                - theater
+                - hall
+                - seats
+                - qrCode
+        PaginatedBookingsResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: "#/components/schemas/GetBookingsResponse"
+                page:
+                    type: number
+                    example: 1
+                limit:
+                    type: number
+                    example: 20
+                total:
+                    type: number
+                    example: 42
+                totalPages:
+                    type: number
+                    example: 3
+            required:
+                - data
+                - page
+                - limit
+                - total
+                - totalPages

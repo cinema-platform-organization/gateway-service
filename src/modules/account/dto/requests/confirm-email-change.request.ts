@@ -3,7 +3,7 @@ import { IsEmail, IsNotEmpty, IsNumberString, Length } from "class-validator";
 
 export class ConfirmEmailChangeRequest {
 	@ApiProperty({
-		example: "cinema-platform@mail.com",
+		example: "email@mail.cinema-platform.site",
 	})
 	@IsNotEmpty()
 	@IsEmail()

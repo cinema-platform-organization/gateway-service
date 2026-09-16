@@ -182,7 +182,7 @@ export class MovieController {
 
 		const posterUpload = await this.mediaClient.call("upload", {
 			fileName: randomBytes(16).toString("hex"),
-			folder: "movies",
+			folder: "posters",
 			contentType: posterFile.mimetype,
 			data: new Uint8Array(posterFile.buffer),
 		});
@@ -191,7 +191,7 @@ export class MovieController {
 		if (bannerFile) {
 			const bannerUpload = await this.mediaClient.call("upload", {
 				fileName: randomBytes(16).toString("hex"),
-				folder: "movies",
+				folder: "banners",
 				contentType: bannerFile.mimetype,
 				data: new Uint8Array(bannerFile.buffer),
 			});

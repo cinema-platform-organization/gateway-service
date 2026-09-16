@@ -12,7 +12,7 @@ export class GetMeResponse {
 	public name: string;
 
 	@ApiProperty({
-		example: "someone@cinema-platform.com",
+		example: "email@mail.cinema-platform.site",
 	})
 	public email: string;
 
