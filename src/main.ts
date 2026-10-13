@@ -1,20 +1,31 @@
-import { Logger, ValidationPipe } from "@nestjs/common";
+// sort-imports-ignore
+import "./observability/tracing";
+
+import { ValidationPipe } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
+import type { NestExpressApplication } from "@nestjs/platform-express";
 import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import cookieParser from "cookie-parser";
+import { Logger } from "nestjs-pino";
 
 import { AppModule } from "./core/app.module";
 import { getCorsConfig } from "./core/config";
 import { getValidationPipeConfig } from "./core/config";
-import "./observability/tracing";
+
 import { GrpcExceptionFilter } from "./shared/filters";
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
+	const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+		bufferLogs: true,
+	});
+
+	const logger = app.get(Logger);
+	app.useLogger(logger);
 
 	const config = app.get(ConfigService);
-	const logger = new Logger();
+
+	app.set("trust proxy", 1);
 
 	app.use(cookieParser(config.getOrThrow<string>("COOKIES_SECRET")));
 	app.useGlobalPipes(new ValidationPipe(getValidationPipeConfig()));
@@ -26,6 +37,7 @@ async function bootstrap() {
 		.setDescription("API Gateway for Cinema Platform microservices")
 		.setVersion("1.0")
 		.addBearerAuth()
+		.addCookieAuth("refreshToken")
 		.build();
 
 	const swaggerDocument = SwaggerModule.createDocument(app, swaggerConfig);

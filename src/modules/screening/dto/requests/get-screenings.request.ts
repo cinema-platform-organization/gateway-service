@@ -11,6 +11,9 @@ import {
 
 export class GetScreeningsRequest {
 	@ApiPropertyOptional({
+		description:
+			"Only screenings in this theater's halls. An unknown theater or one " +
+			"without halls returns an empty list.",
 		example: "81lI6j9Ctva6e7oCPpelc",
 	})
 	@IsOptional()
@@ -18,13 +21,26 @@ export class GetScreeningsRequest {
 	public theaterId?: string;
 
 	@ApiPropertyOptional({
+		description:
+			"Only screenings on this day, `YYYY-MM-DD`. The day is counted in " +
+			"**UTC** (00:00–24:00 UTC, i.e. 02:00/03:00 to 02:00/03:00 Kyiv time). " +
+			"With a date, **all** screenings of the day are returned: `limit` and " +
+			"`page` are ignored. Without it, screenings of all days, past ones " +
+			"included, page by page.",
 		example: "2025-11-08",
+		format: "date",
 	})
 	@IsOptional()
 	@IsISO8601()
 	public date?: string;
 
-	@ApiPropertyOptional({ example: 20, default: 20 })
+	@ApiPropertyOptional({
+		description: "Screenings per page (1–100). Ignored when `date` is set.",
+		example: 20,
+		default: 20,
+		minimum: 1,
+		maximum: 100,
+	})
 	@IsOptional()
 	@IsInt()
 	@Min(1)
@@ -36,7 +52,12 @@ export class GetScreeningsRequest {
 	})
 	public limit: number = 20;
 
-	@ApiPropertyOptional({ example: 1, default: 1 })
+	@ApiPropertyOptional({
+		description: "Page number, starting at 1. Ignored when `date` is set.",
+		example: 1,
+		default: 1,
+		minimum: 1,
+	})
 	@IsOptional()
 	@IsInt()
 	@Min(1)

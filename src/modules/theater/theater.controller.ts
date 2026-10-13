@@ -10,14 +10,16 @@ import {
 	Post,
 } from "@nestjs/common";
 import {
-	ApiBearerAuth,
-	ApiNotFoundResponse,
+	ApiCreatedResponse,
 	ApiOkResponse,
 	ApiOperation,
+	ApiParam,
+	ApiTags,
 } from "@nestjs/swagger";
 
 import { Protected } from "@/shared/decorators";
 import { Role } from "@/shared/guards";
+import { ApiErrors, type ApiErrorSpec } from "@/shared/swagger";
 
 import {
 	CreateTheaterRequest,
@@ -29,15 +31,41 @@ import {
 } from "./dto";
 import { TheaterClientGrpc } from "./theater.grpc";
 
+const ID_PARAM = {
+	name: "id",
+	description: "Theater id",
+	example: "81lI6j9Ctva6e7oCPpelc",
+};
+
+const THEATER_NOT_FOUND: ApiErrorSpec = {
+	status: 404,
+	message: "Theater not found",
+	when: "No theater with this id",
+};
+
+const THEATER_VALIDATION = [
+	"name must be a string",
+	"name should not be empty",
+	"address must be a string",
+	"address should not be empty",
+];
+
+@ApiTags("Theaters")
 @Controller("theaters")
 export class TheaterController {
 	public constructor(private readonly client: TheaterClientGrpc) {}
 
 	@ApiOperation({
-		summary: "Get all theaters",
-		description: "Returns the list of all theaters.",
+		summary: "List theaters",
+		description:
+			"Returns all theaters, sorted by name. Public, no authorization needed. " +
+			"Returns an empty array when there are none.",
 	})
-	@ApiOkResponse({ type: [GetTheatersResponse] })
+	@ApiOkResponse({
+		type: [GetTheatersResponse],
+		description: "All theaters",
+	})
+	@ApiErrors()
 	@Get()
 	@HttpCode(HttpStatus.OK)
 	public async getAll() {
@@ -47,11 +75,13 @@ export class TheaterController {
 	}
 
 	@ApiOperation({
-		summary: "Get theater by id",
-		description: "Returns a single theater by its id.",
+		summary: "Get theater",
+		description:
+			"Returns one theater by id. Public, no authorization needed.",
 	})
-	@ApiOkResponse({ type: GetTheatersResponse })
-	@ApiNotFoundResponse()
+	@ApiParam(ID_PARAM)
+	@ApiOkResponse({ type: GetTheatersResponse, description: "The theater" })
+	@ApiErrors({ errors: [THEATER_NOT_FOUND] })
 	@Get(":id")
 	@HttpCode(HttpStatus.OK)
 	public async getById(@Param("id") id: string) {
@@ -62,10 +92,14 @@ export class TheaterController {
 
 	@ApiOperation({
 		summary: "Create theater",
-		description: "Creates a new theater. Admin only.",
+		description:
+			"Creates a theater without halls; add halls with POST /halls. **Admin only.**",
 	})
-	@ApiOkResponse({ type: CreateTheaterResponse })
-	@ApiBearerAuth()
+	@ApiCreatedResponse({
+		type: CreateTheaterResponse,
+		description: "The created theater",
+	})
+	@ApiErrors({ auth: "admin", validation: THEATER_VALIDATION })
 	@Protected(Role.ADMIN)
 	@Post()
 	@HttpCode(HttpStatus.CREATED)
@@ -76,11 +110,19 @@ export class TheaterController {
 	@ApiOperation({
 		summary: "Update theater",
 		description:
-			"Updates a theater. Only provided fields are changed. Admin only.",
+			"Changes only the fields that are sent; the rest stay as they are. " +
+			"An empty body changes nothing and returns the theater. **Admin only.**",
 	})
-	@ApiOkResponse({ type: UpdateTheaterResponse })
-	@ApiNotFoundResponse()
-	@ApiBearerAuth()
+	@ApiParam(ID_PARAM)
+	@ApiOkResponse({
+		type: UpdateTheaterResponse,
+		description: "The theater after the update",
+	})
+	@ApiErrors({
+		auth: "admin",
+		validation: THEATER_VALIDATION,
+		errors: [THEATER_NOT_FOUND],
+	})
 	@Protected(Role.ADMIN)
 	@Patch(":id")
 	@HttpCode(HttpStatus.OK)
@@ -93,17 +135,33 @@ export class TheaterController {
 			...dto,
 		});
 
-		return response.theater;
+		return { theater: response.theater };
 	}
 
 	@ApiOperation({
 		summary: "Delete theater",
 		description:
-			"Deletes a theater. Fails if the theater has upcoming screenings. Admin only.",
+			"Deletes a theater together with **all its halls and their seats**. " +
+			"**Admin only.**\n\n" +
+			"Not possible while any of its halls has upcoming screenings. Past " +
+			"screenings and their bookings stay, but no longer show the theater or hall.",
 	})
-	@ApiOkResponse({ type: DeleteTheaterResponse })
-	@ApiNotFoundResponse()
-	@ApiBearerAuth()
+	@ApiParam(ID_PARAM)
+	@ApiOkResponse({
+		type: DeleteTheaterResponse,
+		description: "Theater, halls and seats deleted",
+	})
+	@ApiErrors({
+		auth: "admin",
+		errors: [
+			{
+				status: 400,
+				message: "Cannot delete theater with upcoming screenings",
+				when: "Any hall of the theater still has screenings in the future",
+			},
+			THEATER_NOT_FOUND,
+		],
+	})
 	@Protected(Role.ADMIN)
 	@Delete(":id")
 	@HttpCode(HttpStatus.OK)

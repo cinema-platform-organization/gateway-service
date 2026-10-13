@@ -7,12 +7,10 @@ import {
 import { InjectMetric } from "@willsoto/nestjs-prometheus";
 import type { Request, Response } from "express";
 import { Counter, Gauge, Histogram } from "prom-client";
-import { finalize, type Observable } from "rxjs";
+import type { Observable } from "rxjs";
 
 @Injectable()
 export class HttpMetricsInterceptor implements NestInterceptor {
-	private readonly SERVICE_NAME: string;
-
 	public constructor(
 		@InjectMetric("http_requests_total")
 		private readonly counter: Counter<string>,
@@ -20,44 +18,38 @@ export class HttpMetricsInterceptor implements NestInterceptor {
 		private readonly histogram: Histogram<string>,
 		@InjectMetric("http_requests_in_flight")
 		private readonly inFlight: Gauge<string>,
-	) {
-		this.SERVICE_NAME = "gateway";
-	}
+	) {}
 
 	public intercept(
 		context: ExecutionContext,
-		next: CallHandler<any>,
-	): Observable<any> {
+		next: CallHandler<unknown>,
+	): Observable<unknown> {
+		if (context.getType() !== "http") {
+			return next.handle();
+		}
+
 		const req = context.switchToHttp().getRequest<Request>();
 		const res = context.switchToHttp().getResponse<Response>();
 
 		const method = req.method;
 		const route = (req.route as { path?: string })?.path ?? "unknown";
 
-		this.inFlight.inc({ service: this.SERVICE_NAME });
+		if (route === "/metrics") {
+			return next.handle();
+		}
 
-		const endTimer = this.histogram.startTimer();
+		this.inFlight.inc();
 
-		return next.handle().pipe(
-			finalize(() => {
-				const status = res.statusCode.toString();
+		const endTimer = this.histogram.startTimer({ method, route });
 
-				this.counter.inc({
-					service: this.SERVICE_NAME,
-					method,
-					route,
-					status,
-				});
+		res.once("close", () => {
+			const status = res.statusCode.toString();
 
-				endTimer({
-					service: this.SERVICE_NAME,
-					method,
-					route,
-					status,
-				});
+			endTimer({ status });
+			this.counter.inc({ method, route, status });
+			this.inFlight.dec();
+		});
 
-				this.inFlight.dec({ service: this.SERVICE_NAME });
-			}),
-		);
+		return next.handle();
 	}
 }

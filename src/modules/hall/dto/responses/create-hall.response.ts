@@ -3,6 +3,6 @@ import { ApiProperty } from "@nestjs/swagger";
 import { GetHallResponse } from "./get-hall.response";
 
 export class CreateHallResponse {
-	@ApiProperty({ type: GetHallResponse })
+	@ApiProperty({ type: GetHallResponse, description: "The created hall" })
 	public hall: GetHallResponse;
 }

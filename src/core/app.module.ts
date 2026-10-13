@@ -1,3 +1,4 @@
+import { ServiceLoggerModule } from "@cinema-platform/common";
 import { PassportModule } from "@cinema-platform/passport";
 import { Module } from "@nestjs/common";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -33,6 +34,7 @@ import { getPassportConfig } from "./config";
 				".env",
 			],
 		}),
+		ServiceLoggerModule.forRoot("gateway-service"),
 		ThrottlerModule.forRoot([
 			{
 				ttl: 60000, // 1 minute, in ms
