@@ -37,8 +37,6 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 			status,
 		};
 
-		// 5xx is our problem and goes to the errors dashboard;
-		// 4xx is a client mistake and only matters when debugging
 		if (status >= 500) {
 			this.logger.error(
 				{ err: exception as Error, ...logContext },
@@ -67,8 +65,6 @@ export class GrpcExceptionFilter implements ExceptionFilter {
 		if (exception instanceof HttpException) {
 			const body = exception.getResponse();
 
-			// Keep ValidationPipe's per-field messages instead of the
-			// generic "Bad Request Exception"
 			const message =
 				typeof body === "string"
 					? body
